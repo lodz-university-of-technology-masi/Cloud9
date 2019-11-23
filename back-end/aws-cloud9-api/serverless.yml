@@ -14,6 +14,7 @@
 service: cloud9-api
 custom:
   formsTableName: 'form-${self:provider.stage}'
+  questionsTableName: 'Questions-${self:provider.stage}'
   
 provider:
   name: aws
@@ -33,6 +34,7 @@ provider:
         - { "Fn::GetAtt": ["FormsDynamoDBTable", "Arn" ] }
   environment:
     FORMS_TABLE_NAME: ${self:custom.formsTableName}
+    QUESTIONS_TABLE_NAME: ${self:custom.questionsTableName}
 
 
 package:
@@ -85,6 +87,20 @@ resources:
             KeyType: HASH
           - AttributeName: name
             KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+          
+    QuestionsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.questionsTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

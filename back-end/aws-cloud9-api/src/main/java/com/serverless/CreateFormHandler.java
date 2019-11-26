@@ -27,7 +27,7 @@ public class CreateFormHandler implements RequestHandler<Map<String, Object>, Ap
 			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
 			Form form = new Form();
 			form.setName(body.get("name").asText());
-			form.setDescription(body.get("description").asText());
+			form.setCreationDate(body.get("createDate").asText());
 			form.save();
 			return ApiGatewayResponse.builder()
       				.setStatusCode(200)

@@ -21,6 +21,7 @@ public class GetFormHandler implements RequestHandler<Map<String, Object>, ApiGa
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
 	        // get pathParameters
+			@SuppressWarnings("unchecked")
 			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
 	        String formId = pathParameters.get("id");
 	        Form form = new FormDBTable().get(formId);

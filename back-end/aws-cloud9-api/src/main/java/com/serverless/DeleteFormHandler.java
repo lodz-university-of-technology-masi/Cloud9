@@ -21,7 +21,8 @@ public class DeleteFormHandler implements RequestHandler<Map<String, Object>, Ap
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
 	        // get pathParameters
-			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
+			@SuppressWarnings("unchecked")
+			Map<String,String> pathParameters = (Map<String,String>)input.get("pathParameters");
 	        String formId = pathParameters.get("id");
 	        Boolean results = new FormDBTable().delete(formId);
 	        if (results) {

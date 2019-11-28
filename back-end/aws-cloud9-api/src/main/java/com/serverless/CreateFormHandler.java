@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.dal.Form;
+import com.serverless.dal.FormDBTable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.List;
@@ -25,10 +26,11 @@ public class CreateFormHandler implements RequestHandler<Map<String, Object>, Ap
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
 			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
+			FormDBTable table = new FormDBTable();
 			Form form = new Form();
 			form.setName(body.get("name").asText());
 			form.setCreationDate(body.get("createDate").asText());
-			form.save();
+			table.save(form);
 			return ApiGatewayResponse.builder()
       				.setStatusCode(200)
       				.setObjectBody(form)

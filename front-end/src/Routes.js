@@ -4,13 +4,13 @@ import asyncComponent from "./components/AsyncComponent";
 import AppliedRoute from "./components/AppliedRoute";
 import UnauthenticatedRoute from "./components/UnauthenticatedRoute";
 
-const AsyncHome = asyncComponent(() => import("./containers/Home"));
-const AsyncLogin = asyncComponent(() => import("./containers/Login"));
-const AsyncSignup = asyncComponent(() => import("./containers/Signup"));
-const AsyncNotFound = asyncComponent(() => import("./containers/NotFound"));
+const AsyncHome = asyncComponent(() => import("./containers/home/Home"));
+const AsyncSignin = asyncComponent(() => import("./containers/page/signin/Signin"));
+const AsyncNotFound = asyncComponent(() => import("./containers/error/NotFound"));
+const AsyncSignup = asyncComponent(() => import("./containers/page/signup/Signup"));
 
 export default ({ childProps }) =>
-  <Switch>
+<Switch>
     <AppliedRoute
       path="/"
       exact
@@ -18,9 +18,9 @@ export default ({ childProps }) =>
       props={childProps}
     />
     <UnauthenticatedRoute
-      path="/login"
+      path="/signin"
       exact
-      component={AsyncLogin}
+      component={AsyncSignin}
       props={childProps}
     />
     <UnauthenticatedRoute
@@ -29,7 +29,7 @@ export default ({ childProps }) =>
       component={AsyncSignup}
       props={childProps}
     />
-    {/* Finally, catch all unmatched routes */}
+    {/*jezeleli nic nie znajdzie to wyswietl 404*/}
     <Route component={AsyncNotFound} />
-  </Switch>
+</Switch>
 ;

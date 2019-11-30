@@ -29,6 +29,7 @@ export default ({ childProps }) =>
       component={AsyncSignup}
       props={childProps}
     />
+
     {/*jezeleli nic nie znajdzie to wyswietl 404*/}
     <Route component={AsyncNotFound} />
 </Switch>

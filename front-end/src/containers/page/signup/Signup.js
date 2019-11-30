@@ -11,9 +11,9 @@ export default class Signup extends Component {
           password: "",
           confirmationCode: "",
           newUser: null,
-          profilType: "user",
+          profilType: "",
           firstName: "",
-          tmpProfilType: NaN,
+          errors: []
         };
     }
 
@@ -25,7 +25,7 @@ export default class Signup extends Component {
 
     setEmail = async (evt) => {
         this.setState({
-            email : evt.target.value
+            email : evt.target.value.toLowerCase()
         });
     }
 
@@ -35,9 +35,9 @@ export default class Signup extends Component {
         });
     }
 
-    setTmpProfiType = async (evt) => {
+    setProfiType = async (evt) => {
         this.setState({
-            tmpProfilType : evt.target.value
+            profilType : parseInt(evt.target.value) === 1 ? "user" : "recruiter"
         });
     }
 
@@ -47,74 +47,168 @@ export default class Signup extends Component {
         });
     }
 
-    handleSubmit = async event => {
-        event.preventDefault();
-    
-        try {
-          const newUser = await Auth.signUp({
-            username: this.state.email,
-            password: this.state.password,
-            attributes: {
-                name: this.state.firstName,      
-                profile : this.state.profilType
-            }
-          });
-          this.setState({
-            newUser
-          });
-        } catch (e) {
-          alert(e.message);
-        }
-    
+    showErrors = () => {
+        let error = [];
+
+        this.state.errors.forEach((value, index) => {
+            error.push(<li key={index}>{value}</li>)
+        });
+
+        return error;
     }
 
     handleConfirmationSubmit = async event => {
+        
         event.preventDefault();
+        let errors = [];
 
-        try {
-          await Auth.confirmSignUp(this.state.email, this.state.confirmationCode);
-          await Auth.signIn(this.state.email, this.state.password);
-    
-          this.props.userHasAuthenticated(true);
-          this.props.history.push("/");
-        } catch (e) {
-          alert(e);
+        let confirmationCodeLen = this.state.confirmationCode.length;
+
+        if (confirmationCodeLen  === 0)
+            errors.push("Pole nie może być puste");
+        
+        if(errors.length > 0)
+        {
+            this.setState({
+                errors : errors
+            });
+            return;
         }
-      }
 
 
+
+        await Auth.confirmSignUp(
+            this.state.email, 
+            this.state.confirmationCode
+        ).then( () => {
+            Auth.signIn(
+                this.state.email, 
+                this.state.password
+            ).then(
+                user => {
+                    this.props.userHasAuthenticated(user)
+                    this.props.history.push("/");
+                })
+                .catch(
+                    err => {
+                        let errors = [];
+                        errors.push(err.message);
+
+                        if(errors.length > 0)
+                        {
+                            this.setState({
+                                errors : errors
+                            });
+                            return;
+                        }
+                    }
+                );
+        })   
+        .catch(
+            err => {
+                let errors = [];
+                errors.push(err.message);
+
+                if(errors.length > 0)
+                {
+                    this.setState({
+                        errors : errors
+                    });
+                    return;
+                }
+            }
+        );
+    }
+
+    handleSubmit = async event => {
+        
+        event.preventDefault();
+        let errors = [];
+        let firstNameLen = this.state.firstName.length;
+        let passwordLen = this.state.password.length;
+        let profilTypeLen = this.state.profilType.length;
+        if( firstNameLen === 0 || firstNameLen > 20 )
+            errors.push("Imię musi posiadać od 1 do 20 znaków.");
+
+        if( passwordLen < 6 || passwordLen > 25 )
+            errors.push("Hasło musi posiadać od 6 do 25 znaków.");
+
+        if (profilTypeLen === 0)
+            errors.push("Musisz wybrać rodzaj profilu.");
+
+        if (!(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(this.state.email)))
+            errors.push("Musisz wpisać prawidłowy adres mail.");
+        
+        if(errors.length > 0)
+        {
+            this.setState({
+                errors : errors
+            });
+            return;
+        }
+        
+        try {
+            const newUser = await Auth.signUp({
+                username: this.state.email,
+                password: this.state.password,
+                attributes: {
+                    name: this.state.firstName,      
+                    profile : this.state.profilType
+                }
+            });
+            this.setState({
+                newUser
+            });
+        }
+        catch (e) {
+            let errors = [];
+
+            errors.push(e.message);
+
+            if(errors.length > 0)
+            {
+                this.setState({
+                    errors : errors
+                });
+                return;
+            }
+        }
+    }
 
     renderConfirmationForm() {
         return (
-            <div className="signup">
-                <div className="container">
-                    <div className="row justify-content-center align-items-center">
-                        <div className="col-md-4 signup-container justify-content-center">
-                            <h2 className="text-center">Sprawdź swój mail</h2>
-                            <form className="signup-form" onSubmit={this.handleConfirmationSubmit}>
-                                <div className="form-group">
-                                    <label htmlFor="code-input" className="text-uppercase float-left">Kod potwierdzenia</label>
-                                    <input type="text" className="form-control code-input" placeholder="Wprowadź swój kod z maila" onChange={this.setConfirmationCode} />
-                                </div>
-                                <div className="form-check">
-                                    <button type="submit" className="btn btn-success btn-signup">Dokończ rejestrację</button>
-                                </div>
-                            </form>
-                            <div className="copy-text"><h6>Created with by <b>Cloud9</b></h6></div>
+            <div className="container">
+                <div className="row justify-content-center">
+                    <div className="col-md-5 signup-container">
+                        <h2 className="text-center">Rejestracja</h2>
+                        <form onSubmit={this.handleConfirmationSubmit}>
+                            <div className="form-group">
+                                <label htmlFor="code-input" className="text-uppercase float-left">Kod potwierdzenia</label>
+                                <input type="text" className="form-control code-input" placeholder="Wprowadź swój kod z maila" onChange={this.setConfirmationCode} />
+                            </div>
+                            <div className="form-group">
+                                <button type="submit" className="btn btn-success btn-signup">Aktywuj konto</button>
+                            </div>
+                        </form>
+                        <div className={"alert " + (this.state.errors.length > 0 ? 'alert-danger' : '')} role="alert">
+                                {this.showErrors()}
+                        </div>
+                        <div className="copy-text">
+                            <h6>Created by <b>Cloud9</b></h6>
                         </div>
                     </div>
                 </div>
             </div>
         );
     }
+
     renderForm() {
         return (
-            <div className="signup">
-                <div className="container">
-                    <div className="row justify-content-center align-items-center">
-                        <div className="col-md-4 signup-container justify-content-center">
-                            <h2 className="text-center">Rejestracja</h2>
-                            <form className="signup-form" onSubmit={this.handleSubmit}>
+            <div className="container">
+                <div className="row justify-content-center">
+                    <div className="col-md-5 signup-container">
+                        <h2 className="text-center">Rejestracja</h2>
+                        <form onSubmit={this.handleSubmit}>
                                 <div className="form-group">
                                     <label htmlFor="firstname-input" className="text-uppercase float-left">Imię</label>
                                     <input type="text" className="form-control firstname-input" placeholder="Wprowadź swoje imię" onChange={this.setFirstName} />
@@ -130,18 +224,21 @@ export default class Signup extends Component {
                                 </div>
                                 <div className="form-group">
                                     <label htmlFor="select-profil" className="text-uppercase float-left">Wybierz typ profilu</label>
-                                    <select className="custom-select select-profil" onChange={this.setTmpProfiType}>
-                                        <option selected>Wybierz profil</option>
+                                    <select className="custom-select select-profil" onChange={this.setProfiType}>
+                                        <option defaultValue>Wybierz profil</option>
                                         <option value="1" >Użytkownik</option>
                                         <option value="2">Rekruter</option>
                                     </select>
                                 </div>
-                                
-                                <div className="form-check">
+                                <div className="form-group">
                                     <button type="submit" className="btn btn-success btn-signup">Zarejestruj się</button>
                                 </div>
-                            </form>
-                            <div className="copy-text"><h6>Created with by <b>Cloud9</b></h6></div>
+                        </form>
+                        <div className={"alert " + (this.state.errors.length > 0 ? 'alert-danger' : '')} role="alert">
+                                {this.showErrors()}
+                        </div>
+                        <div className="copy-text">
+                            <h6>Created by <b>Cloud9</b></h6>
                         </div>
                     </div>
                 </div>
@@ -149,15 +246,12 @@ export default class Signup extends Component {
         );
     }
 
-
-
     render() {
         return (
-            <div className="Signup">
-                {
-                    this.state.newUser === null ? this.renderForm()  : this.renderConfirmationForm()
-                }
+            <div className="signup-wrapper">
+                {this.state.newUser === null ? this.renderForm()  : this.renderConfirmationForm()}
             </div>
         );
     }
+
 }

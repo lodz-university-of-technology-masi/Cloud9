@@ -9,7 +9,9 @@ export default class Home extends Component {
     }
     
     renderHome() {
-        return(<div>zalogowany</div>);
+        return(<div>
+            zalogowany
+        </div>);
     }
 
     renderMain() {

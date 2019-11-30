@@ -1,35 +1,21 @@
-.signin {
-    margin-top: 10vh;
+.signin-container {
+    margin-top:5vh;
+    box-shadow: 0px 8px 36px #222;
+    background-color: #fefefe;
+    border-radius: 6px;
 }
-.login-container {
-    border: 1px solid #343a40!important;
-    border-radius:10px;
-    padding: 40px 30px;
-    position:relative;
-}
-.login-container .copy-text{
-    position:absolute; 
-    width:80%; 
-    bottom:20px; 
-    text-align:center;
-}
-.login-container .form-check{
-    margin-bottom: 4vh;
-    padding-left: 0;
-}
-.login-container h2:after{
-    content:" "; 
-    width: 20vw; 
-    height: 5px; 
-    background:#17a2b8!important; 
-    display: block; 
-    margin-top:1vh; 
-    border-radius:3px; 
-    margin-left:auto;
-    margin-right:auto;
-    margin-bottom: 5vh;
+.signin-container h2 {
+    font-size: 2em;
+    font-weight: lighter;
+    margin-top: 0.50em;
+    color: #222;
+    margin-bottom: 1.25em;
 }
 
-.btn-login {
-    width: 100%;
+.btn-signin{
+    width:100%;
+}
+
+.copy-text{
+    margin-bottom: 2em;
 }

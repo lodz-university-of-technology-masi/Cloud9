@@ -10,8 +10,32 @@ class App extends Component {
 
     this.state = {
       isAuthenticated: false,//uzytkownik nie jest zalogowany
-      isAuthenticating: true
+      isAuthenticating: true, // zmienna pomocnicza
+      user: NaN // profil uzytkownika, ktory sie zaloguje
     };
+  }
+
+  async componentDidMount() {
+    await Auth.currentAuthenticatedUser().
+    then(
+      user => this.userHasAuthenticated(user)
+    )
+    .catch(
+      this.setState({ isAuthenticating: false })
+    );
+  }
+
+  userHasAuthenticated = authenticated => {
+    this.setState({ 
+      isAuthenticated: true,
+      user: authenticated
+     });
+  }
+
+  handleLogout = async event => {
+    await Auth.signOut();
+    this.userHasAuthenticated(false);
+    this.props.history.push("/");
   }
 
   render() {

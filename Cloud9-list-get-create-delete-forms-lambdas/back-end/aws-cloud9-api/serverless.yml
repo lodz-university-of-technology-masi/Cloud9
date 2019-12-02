@@ -1,0 +1,159 @@
+# Welcome to Serverless!
+#
+# This file is the main config file for your service.
+# It's very minimal at this point and uses default values.
+# You can always add more config options for more control.
+# We've included some commented out config examples here.
+# Just uncomment any of them to get that config option.
+#
+# For full config options, check the docs:
+#    docs.serverless.com
+#
+# Happy Coding!
+
+service: cloud9-api
+custom:
+  formsTableName: 'Forms-${self:provider.stage}'
+  questionsTableName: 'Questionss-${self:provider.stage}'
+  
+provider:
+  name: aws
+  runtime: java8
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - { "Fn::GetAtt": ["FormsDynamoDBTable", "Arn" ] }
+        - { "Fn::GetAtt": ["QuestionsDynamoDBTable", "Arn" ] }
+  environment:
+    FORMS_TABLE_NAME: ${self:custom.formsTableName}
+    QUESTIONS_TABLE_NAME: ${self:custom.questionsTableName}
+
+
+package:
+  artifact: 'target/${self:service}-${self:provider.stage}.jar'
+
+functions:
+  hello:
+    handler: com.serverless.Handler
+    events:
+      - http:
+          path: /test
+          method: get
+  listForm:
+    handler: com.serverless.ListFormHandler
+    events:
+      - http:
+          path: /forms
+          method: get
+  listQuestion:
+    handler: com.serverless.ListQuestionHandler
+    events:
+      - http:
+          path: /questions
+          method: get   
+  listFormQuestions:
+    handler: com.serverless.ListFormQuestions
+    events:
+      - http:
+          path: /formquestions/{formid}
+          method: get
+  getForm:
+    handler: com.serverless.GetFormHandler
+    events:
+      - http:
+          path: /forms/{id}
+          method: get
+  getQuestion:
+    handler: com.serverless.GetQuestionHandler
+    events:
+      - http:
+          path: /question/{id}
+          method: get
+  createForm:
+    handler: com.serverless.CreateFormHandler
+    events:
+      - http:
+          path: /forms
+          method: post
+  createQuestion:
+    handler: com.serverless.CreateQuestionHandler
+    events:
+      - http:
+          path: /question
+          method: post
+  createClosedQuestion:
+    handler: com.serverless.CreateClosedQuestionHandler
+    events:
+      - http:
+          path: /closedquestion
+          method: post
+  deleteProduct:
+    handler: com.serverless.DeleteFormHandler
+    events:
+      - http:
+          path: /forms/{id}
+          method: delete
+  deleteFormMembership:
+    handler: com.serverless.DeleteQuestionFromFormHandler
+    events:
+      - http:
+          path: /deletemembership
+          method: post
+  CreateMembership:
+    handler: com.serverless.CreateMembershipHandler
+    events:
+      - http:
+          path: /createmembership
+          method: post
+  setCorrectAnswer:
+    handler: com.serverless.SetCorrectAnswerHandler
+    events:
+      - http:
+          path: /setCorrectAnswer
+          method: post
+resources:
+  Resources:
+    FormsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.formsTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: name
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+          
+    QuestionsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.questionsTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+          - AttributeName: name
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+          - AttributeName: name
+            KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1

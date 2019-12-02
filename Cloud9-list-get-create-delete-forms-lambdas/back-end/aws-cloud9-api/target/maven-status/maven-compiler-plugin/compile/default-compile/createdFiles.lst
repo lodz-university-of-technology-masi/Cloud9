@@ -1,0 +1,13 @@
+com\serverless\ApiGatewayResponse$Builder.class
+com\serverless\ListQuestionHandler.class
+com\serverless\Response.class
+com\serverless\ApiGatewayResponse.class
+com\serverless\dal\Question.class
+com\serverless\Handler.class
+com\serverless\dal\FormDBTable.class
+com\serverless\CreateFormHandler.class
+com\serverless\dal\Form.class
+com\serverless\GetFormHandler.class
+com\serverless\DeleteFormHandler.class
+com\serverless\dal\DynamoDBAdapter.class
+com\serverless\ListFormHandler.class

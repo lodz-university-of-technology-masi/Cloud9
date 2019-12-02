@@ -18,25 +18,40 @@ import com.serverless.dal.FormDBTable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.List;
-public class CreateFormHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
+public class AddFormUsersHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse>{
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
+			@SuppressWarnings("unchecked")
+			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
+	        String formId = pathParameters.get("id");
+			Form form = new FormDBTable().get(formId);
 			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
+			//JsonNode user = body.get("user");
 			FormDBTable table = new FormDBTable();
-			Form form = new Form();
-			form.setId(body.get("id").asText());
-			form.setName(body.get("name").asText());
-			form.setCreationDate(body.get("creationDate").asText());
+			//String formId = body.get("id").asText();
+			//String formId = "3";;
+			if(form!=null) {
+			form.addUsers(body.get("userID").asText(), body.get("recruiterID").asText());
+			//form.setUsers("jeden", "dwa");
+			//table.delete(new String("3"));
 			table.save(form);
 			return ApiGatewayResponse.builder()
       				.setStatusCode(200)
       				.setObjectBody(form)
       				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
       				.build();
+			}
+			else {
+				return ApiGatewayResponse.builder()
+        				.setStatusCode(404)
+        				.setObjectBody("Form with id: '" + "3" + "' not found.")
+        				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+        				.build();
+			}
 			
 		} catch (IOException e) {
 			Response responseBody = new Response("lipa", input);
@@ -46,10 +61,5 @@ public class CreateFormHandler implements RequestHandler<Map<String, Object>, Ap
 					.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & serverless"))
 					.build();
 		}
-		
-		
-		
-		
-		
 	}
 }

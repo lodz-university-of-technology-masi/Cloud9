@@ -8,8 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-
 import com.serverless.dal.Form;
+import com.serverless.dal.FormDBTable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.List;
@@ -21,9 +21,10 @@ public class GetFormHandler implements RequestHandler<Map<String, Object>, ApiGa
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
 	        // get pathParameters
+			@SuppressWarnings("unchecked")
 			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
 	        String formId = pathParameters.get("id");
-	        Form form = new Form().get(formId);
+	        Form form = new FormDBTable().get(formId);
 
 	        // send the response back
 	        if (form != null) {

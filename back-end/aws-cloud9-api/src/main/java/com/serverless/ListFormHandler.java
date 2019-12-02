@@ -8,8 +8,8 @@ import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-
 import com.serverless.dal.Form;
+import com.serverless.dal.FormDBTable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.List;
@@ -21,7 +21,7 @@ public class ListFormHandler implements RequestHandler<Map<String, Object>, ApiG
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
 	        // get all forms
-	        List<Form> forms = new Form().list();
+	        List<Form> forms = new FormDBTable().list();
 	        
 	        // send the response back
 	        return ApiGatewayResponse.builder()

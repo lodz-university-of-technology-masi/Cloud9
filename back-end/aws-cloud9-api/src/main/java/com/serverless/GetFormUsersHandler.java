@@ -18,25 +18,32 @@ import com.serverless.dal.FormDBTable;
 import java.util.Collections;
 import java.util.Map;
 import java.util.List;
-public class CreateFormHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
+public class GetFormUsersHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse>{
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
-			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
-			FormDBTable table = new FormDBTable();
-			Form form = new Form();
-			form.setId(body.get("id").asText());
-			form.setName(body.get("name").asText());
-			form.setCreationDate(body.get("creationDate").asText());
-			table.save(form);
+			@SuppressWarnings("unchecked")
+			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
+	        String formId = pathParameters.get("id");
+			Form form = new FormDBTable().get(formId);
+			if(form!=null) {
+
 			return ApiGatewayResponse.builder()
       				.setStatusCode(200)
-      				.setObjectBody(form)
+      				.setObjectBody(form.getUsers())
       				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
       				.build();
+			}
+			else {
+				return ApiGatewayResponse.builder()
+        				.setStatusCode(404)
+        				.setObjectBody("Form with id: '" + formId + "' not found.")
+        				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+        				.build();
+			}
 			
 		} catch (IOException e) {
 			Response responseBody = new Response("lipa", input);
@@ -46,10 +53,6 @@ public class CreateFormHandler implements RequestHandler<Map<String, Object>, Ap
 					.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & serverless"))
 					.build();
 		}
-		
-		
-		
-		
-		
 	}
 }
+

@@ -10,15 +10,16 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.serverless.dal.Form;
 import com.serverless.dal.FormDBTable;
-import java.util.Collections;
-import java.util.Map;
 import java.util.List;
+
+
 public class ListFormHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
+		LOG.info("Call ListFormHandler::handleRequest(" + input + ", " + context + ")");
 		try {
 	        // get all forms
 	        List<Form> forms = new FormDBTable().list();

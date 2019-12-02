@@ -10,15 +10,15 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.serverless.dal.Form;
 import com.serverless.dal.FormDBTable;
-import java.util.Collections;
-import java.util.Map;
-import java.util.List;
+
+
 public class GetFormHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
+		LOG.info("Call GetFormHandler::handleRequest(" + input + ", " + context + ")");
 		try {
 	        // get pathParameters
 			@SuppressWarnings("unchecked")
@@ -41,7 +41,7 @@ public class GetFormHandler implements RequestHandler<Map<String, Object>, ApiGa
 	      				.build();
 	        }
 	    } catch (Exception ex) {
-	    	LOG.error("Error in listing forms: " + ex);
+	    	LOG.error("Error in getting form: " + ex);
 	        // send the error response back
 	  			Response responseBody = new Response("Error in retrieving forms: ", input);
 	  			return ApiGatewayResponse.builder()

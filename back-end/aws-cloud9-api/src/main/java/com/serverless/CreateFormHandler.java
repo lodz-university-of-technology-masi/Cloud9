@@ -9,26 +9,27 @@ import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.dal.Form;
-import java.util.Collections;
-import java.util.Map;
-import java.util.List;
+import com.serverless.dal.FormDBTable;
+
+
 public class CreateFormHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
+		LOG.info("Call CreateFormHandler::handleRequest(" + input + ", " + context + ")");
 		try {
 			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
+			FormDBTable table = new FormDBTable();
 			Form form = new Form();
+			form.setId(body.get("id").asText());
 			form.setName(body.get("name").asText());
-			form.setDescription(body.get("description").asText());
-			form.save();
+			form.setCreationDate(body.get("creationDate").asText());
+			table.save(form);
 			return ApiGatewayResponse.builder()
       				.setStatusCode(200)
       				.setObjectBody(form)
@@ -36,6 +37,7 @@ public class CreateFormHandler implements RequestHandler<Map<String, Object>, Ap
       				.build();
 			
 		} catch (IOException e) {
+			LOG.error("Error in creating form: " + e);
 			Response responseBody = new Response("lipa", input);
 			return ApiGatewayResponse.builder()
 					.setStatusCode(500)

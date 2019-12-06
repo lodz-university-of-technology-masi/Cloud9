@@ -65,6 +65,12 @@ functions:
       - http:
           path: /forms
           method: post
+  updateForm:
+    handler: com.serverless.ModifyFormHandler
+    events:
+      - http:
+          path: /forms
+          method: put
   deleteProduct:
     handler: com.serverless.DeleteFormHandler
     events:

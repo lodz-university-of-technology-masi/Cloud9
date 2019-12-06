@@ -8,6 +8,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.fasterxml.jackson.databind.JsonNode;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -93,5 +95,13 @@ public class FormDBTable {
           return false;
         }
         return true;
+    }
+    
+    public Form update(JsonNode newBody) throws IOException {
+    	String id = newBody.get("id").asText();
+    	Form form = this.get(id);
+    	form.update(newBody);
+    	this.mapper.save(form);
+    	return form;
     }
 }

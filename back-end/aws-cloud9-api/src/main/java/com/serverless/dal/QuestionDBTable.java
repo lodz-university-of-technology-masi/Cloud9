@@ -19,7 +19,7 @@ public class QuestionDBTable {
 
 private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABLE_NAME");
     
-    private static DynamoDBAdapter db_adapter;
+	private static DynamoDBAdapter db_adapter;
     private final AmazonDynamoDB client;
     private final DynamoDBMapper mapper;
 
@@ -67,17 +67,17 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
     }
     
  
-    public Question get(String id) throws IOException {
-    	Question question = null;
+    public ClosedQuestion get(String id) throws IOException {
+    	ClosedQuestion question = null;
 
         HashMap<String, AttributeValue> av = new HashMap<String, AttributeValue>();
         av.put(":v1", new AttributeValue().withS(id));
 
-        DynamoDBQueryExpression<Question> queryExp = new DynamoDBQueryExpression<Question>()
+        DynamoDBQueryExpression<ClosedQuestion> queryExp = new DynamoDBQueryExpression<ClosedQuestion>()
             .withKeyConditionExpression("id = :v1")
             .withExpressionAttributeValues(av);
 
-        PaginatedQueryList<Question> result = this.mapper.query(Question.class, queryExp);
+        PaginatedQueryList<ClosedQuestion> result = this.mapper.query(ClosedQuestion.class, queryExp);
         if(result.size() > 0) {
         	question = result.get(0);
         }
@@ -86,10 +86,10 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
     
   
     
-    public  List<Question> getFormQuestions(String formid) throws IOException {
+    public  List<ClosedQuestion> getFormQuestions(String formid) throws IOException {
     	DynamoDBScanExpression scanExp = new DynamoDBScanExpression();
-        List<Question> results = this.mapper.scan(Question.class, scanExp);
-        List<Question> res = new ArrayList<Question>();
+        List<ClosedQuestion> results = this.mapper.scan(ClosedQuestion.class, scanExp);
+        List<ClosedQuestion> res = new ArrayList<ClosedQuestion>();
         for (int i=0; i< results.size(); i++)
         {
         	if (results.get(i).getForm_membership()!=null) {
@@ -179,10 +179,7 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
         this.mapper.save(newquestion);
     }
     
-    public void save(Task newquestion) throws IOException {
-        this.mapper.save(newquestion);
-    }
-    
+
     
  
     

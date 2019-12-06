@@ -13,8 +13,8 @@
 
 service: cloud9-api
 custom:
-  formsTableName: 'form-${self:provider.stage}'
-  questionsTableName: 'Questions-${self:provider.stage}'
+  formsTableName: 'Forms-${self:provider.stage}'
+  questionsTableName: 'Questionss-${self:provider.stage}'
   
 provider:
   name: aws
@@ -32,6 +32,7 @@ provider:
         - dynamodb:DeleteItem
       Resource:
         - { "Fn::GetAtt": ["FormsDynamoDBTable", "Arn" ] }
+        - { "Fn::GetAtt": ["QuestionsDynamoDBTable", "Arn" ] }
   environment:
     FORMS_TABLE_NAME: ${self:custom.formsTableName}
     QUESTIONS_TABLE_NAME: ${self:custom.questionsTableName}
@@ -53,11 +54,29 @@ functions:
       - http:
           path: /forms
           method: get
+  listQuestion:
+    handler: com.serverless.QuestionHandlers.ListQuestionHandler
+    events:
+      - http:
+          path: /questions
+          method: get   
+  listFormQuestions:
+    handler: com.serverless.QuestionHandlers.ListFormQuestions
+    events:
+      - http:
+          path: /formquestions/{formid}
+          method: get
   getForm:
     handler: com.serverless.GetFormHandler
     events:
       - http:
           path: /forms/{id}
+          method: get
+  getQuestion:
+    handler: com.serverless.QuestionHandlers.GetQuestionHandler
+    events:
+      - http:
+          path: /question/{id}
           method: get
   createForm:
     handler: com.serverless.CreateFormHandler
@@ -65,12 +84,42 @@ functions:
       - http:
           path: /forms
           method: post
+  createQuestion:
+    handler: com.serverless.QuestionHandlers.CreateQuestionHandler
+    events:
+      - http:
+          path: /question
+          method: post
+  createClosedQuestion:
+    handler: com.serverless.QuestionHandlers.CreateClosedQuestionHandler
+    events:
+      - http:
+          path: /closedquestion
+          method: post
   deleteProduct:
     handler: com.serverless.DeleteFormHandler
     events:
       - http:
           path: /forms/{id}
           method: delete
+  deleteFormMembership:
+    handler: com.serverless.QuestionHandlers.DeleteQuestionFromFormHandler
+    events:
+      - http:
+          path: /deletemembership
+          method: post
+  CreateMembership:
+    handler: com.serverless.QuestionHandlers.CreateMembershipHandler
+    events:
+      - http:
+          path: /createmembership
+          method: post
+  setCorrectAnswer:
+    handler: com.serverless.QuestionHandlers.SetCorrectAnswerHandler
+    events:
+      - http:
+          path: /setCorrectAnswer
+          method: post
 resources:
   Resources:
     FormsDynamoDBTable:
@@ -98,12 +147,12 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
-          - AttributeName: description
+          - AttributeName: name
             AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-          - AttributeName: description
+          - AttributeName: name
             KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1

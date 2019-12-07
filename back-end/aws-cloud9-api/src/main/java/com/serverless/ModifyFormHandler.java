@@ -25,11 +25,21 @@ public class ModifyFormHandler implements RequestHandler<Map<String, Object>, Ap
 			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
 			FormDBTable table = new FormDBTable();
 			Form newForm = table.update(body);
-			return ApiGatewayResponse.builder()
-      				.setStatusCode(200)
-      				.setObjectBody(newForm)
-      				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
-      				.build();
+			
+			if(newForm != null) {				
+				return ApiGatewayResponse.builder()
+						.setStatusCode(200)
+						.setObjectBody(newForm)
+						.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+						.build();
+			}
+			else {
+				return ApiGatewayResponse.builder()
+						.setStatusCode(404)
+						.setObjectBody("Requested form does not exists")
+						.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+						.build();
+			}
 			
 		} catch (IOException e) {
 			LOG.error("Error in modifying form: " + e);

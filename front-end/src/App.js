@@ -9,25 +9,31 @@ class App extends Component {
     super(props);
 
     this.state = {
-      isAuthenticated: false,//uzytkownik nie jest zalogowany
-      isAuthenticating: true, // zmienna pomocnicza
-      user: NaN // profil uzytkownika, ktory sie zaloguje
+      isAuthenticating: false,
+      user: false
     };
   }
 
   async componentDidMount() {
-    await Auth.currentAuthenticatedUser().
-    then(
-      user => this.userHasAuthenticated(user)
+    await Auth.currentAuthenticatedUser()
+    .then(
+      user => {
+        this.userHasAuthenticated(user);
+      }
     )
     .catch(
-      this.setState({ isAuthenticating: false })
+      err => {
+        if (err !== "not authenticated")
+          console.log(err);
+        this.setState({ isAuthenticating: false, user: false });
+      }
     );
   }
+  
 
   userHasAuthenticated = authenticated => {
     this.setState({ 
-      isAuthenticated: true,
+      isAuthenticating: true,
       user: authenticated
      });
   }
@@ -40,22 +46,37 @@ class App extends Component {
 
   render() {
     const childProps = {
-      isAuthenticated: this.state.isAuthenticated,
-      userHasAuthenticated: this.userHasAuthenticated
+      isAuthenticating: this.state.isAuthenticating,
+      userHasAuthenticated: this.userHasAuthenticated,
+      user: this.state.user
     };
 
-    return(
+    return (
       <div className="App">
-        <nav class="navbar navbar-dark bg-dark">
-          <div class="container">
+        <nav className="navbar navbar-dark bg-dark">
+          <div className="container">
             <Link className="navbar-brand" to="/"><b>Cloud9</b></Link>
+            {this.state.isAuthenticating ? 
+              <Fragment>
+                <div className="nav-item dropdown ml-auto">
+                  <div className="nav-link dropdown-toggle" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ustawienia</div>
+                  <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                    <div className="dropdown-item" onClick={this.handleLogout}>Wyloguj</div>
+                  </div>
+                </div>
+              </Fragment>
+              : <Fragment></Fragment>
+            }
           </div>
+
         </nav>
+
+
 
         <Routes childProps={childProps} />
       </div>
     );
   }
-  
 }
-export default App;
+
+export default withRouter(App);

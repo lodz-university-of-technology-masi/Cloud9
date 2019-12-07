@@ -60,6 +60,8 @@ public class FormDBTable {
     
     
     public Form get(String id) throws IOException {
+    	logger.info("Call FormDBTable::get(" + id + ")");
+
     	Form form = null;
 
         HashMap<String, AttributeValue> av = new HashMap<String, AttributeValue>();
@@ -73,13 +75,12 @@ public class FormDBTable {
         if(result.size() > 0) {
         	form = result.get(0);
         }
-        logger.info("Call FormDBTable::get(" + id + ") -> " + form);
         return form;
     }
     
     public void save(Form newForm) throws IOException {
+    	logger.info("Call FormDBTable::save(" + newForm + ")");
         this.mapper.save(newForm);
-        logger.info("Call FormDBTable::save(" + newForm + ")");
     }
     
     public Boolean delete(String id) throws IOException {
@@ -98,8 +99,13 @@ public class FormDBTable {
     }
     
     public Form update(JsonNode newBody) throws IOException {
+    	logger.info("Call FormDBTable::update(" + newBody + ")");
     	String id = newBody.get("id").asText();
     	Form form = this.get(id);
+    	if(form == null) {
+    		logger.error("Form with id " + id + " not found");
+    		return null;
+    	}
     	form.update(newBody);
     	this.mapper.save(form);
     	return form;

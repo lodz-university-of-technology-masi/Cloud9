@@ -18,25 +18,38 @@ public class Form {
 	 private Logger logger = LogManager.getLogger(this.getClass());
 	 
 	 public Form() {
-		super();
+		logger.info("Call Form::constructor");
 		this.id = null;
 		this.name = null;
 		this.creationDate = null;
-		logger.info("Call Form constructor");
 	}
 	 
 	 public Form(JsonNode body) {
-			super();
+		 	logger.info("Call Form constructor(JsonNode)");
 			this.id = body.get("id").asText();
 			this.name = body.get("name").asText();
 			this.creationDate = body.get("creationDate").asText();
-			logger.info("Call Form constructor(JsonNode)");
 		}
 	
 	 
 	 public void update(JsonNode body) {
-		 this.setName(body.get("name").asText());
-		 this.setCreationDate(body.get("creationDate").asText());
+		 logger.info("Call Form::update(" + body + ")");
+		 JsonNode newName = body.get("name");
+		 JsonNode newCreationDate = body.get("creationDate");
+		 
+		 if(newName != null) {
+			 this.setName(newName.asText());
+		 }
+		 else {
+			 logger.warn("Name is null");
+		 }
+		 
+		 if(newCreationDate != null) {
+			 this.setCreationDate(newCreationDate.asText());
+		 }
+		 else {
+			 logger.warn("CreationDate is null");
+		 }
 	 }
 	 
 	 	@DynamoDBHashKey(attributeName = "id")
@@ -51,7 +64,7 @@ public class Form {
 	        this.id = id;
 	    }
 
-	    @DynamoDBRangeKey(attributeName = "name")
+	    @DynamoDBAttribute(attributeName = "name")
 	    public String getName() {
 	    	logger.info("Call Form::getName() -> " + this.name);
 	    	return this.name;

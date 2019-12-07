@@ -30,25 +30,31 @@ public class AddFormUsersHandler implements RequestHandler<Map<String, Object>, 
 	        String formId = pathParameters.get("id");
 			Form form = new FormDBTable().get(formId);
 			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
-			//JsonNode user = body.get("user");
 			FormDBTable table = new FormDBTable();
-			//String formId = body.get("id").asText();
-			//String formId = "3";;
+			
 			if(form!=null) {
-			form.addUsers(body.get("userID").asText(), body.get("recruiterID").asText());
-			//form.setUsers("jeden", "dwa");
-			//table.delete(new String("3"));
-			table.save(form);
-			return ApiGatewayResponse.builder()
-      				.setStatusCode(200)
-      				.setObjectBody(form)
-      				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
-      				.build();
+				String userId = body.get("userID").asText();
+				if(form.findUser(userId)) {
+					return ApiGatewayResponse.builder()
+		      				.setStatusCode(500)
+		      				.setObjectBody("User with ID:" + userId + " has already been added to this form")
+		      				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+		      				.build();
+				}
+				else {
+					form.addUsers(userId, body.get("recruiterID").asText());
+					table.save(form);
+					return ApiGatewayResponse.builder()
+		      				.setStatusCode(200)
+		      				.setObjectBody(form.getUsers())
+		      				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+		      				.build();
+					}
 			}
 			else {
 				return ApiGatewayResponse.builder()
         				.setStatusCode(404)
-        				.setObjectBody("Form with id: '" + "3" + "' not found.")
+        				.setObjectBody("Form with id: '" + formId + "' not found.")
         				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
         				.build();
 			}

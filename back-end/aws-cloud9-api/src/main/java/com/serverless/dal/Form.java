@@ -63,11 +63,25 @@ public class Form {
 	    }
 	    public void deleteUsers(String userID) {
 	    	for(int i = 0; i<users.size(); i++) {
-	    		if(users.get(i).get("userID") == userID) {
+	    		
+	    		if(users.get(i).get("userID").equals(userID)) {
 	    			users.remove(i);
 	    			break;
 	    		}
 	    	}
+	    }
+	    
+	    public boolean findUser(String userID) {
+	    	System.out.println(userID);
+	    	System.out.println(users.size());
+	    	System.out.println(this.users.size());
+	    	for(int i = 0; i<this.users.size(); i++) {
+	    		System.out.println(this.users.get(i).get("userID"));
+	    		if(this.users.get(i).get("userID").equals(userID)) {
+	    			return true;
+	    		}
+	    	}
+	    	return false;
 	    }
 	    public void setUsers(List<Map<String,String>> users) {
 	    	this.users = users;

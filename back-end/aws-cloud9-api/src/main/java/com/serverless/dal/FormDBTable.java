@@ -16,6 +16,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.serverless.Handler;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -79,6 +80,17 @@ public class FormDBTable {
         	form = result.get(0);
         }
         return form;
+    }
+    
+    public List<String> getForms(String userID ) throws IOException{
+	    	List<Form> allForms = list();
+	    	List<String> resultForms = new ArrayList<String>();
+	    	for(Form form: allForms) {
+	    		if(form.findUser(userID)) {
+	    			resultForms.add(form.getId());
+	    		}
+	    	}
+	    	return resultForms;
     }
     
     public void save(Form newForm) throws IOException {

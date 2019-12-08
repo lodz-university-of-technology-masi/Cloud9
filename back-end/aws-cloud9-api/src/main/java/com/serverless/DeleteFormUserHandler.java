@@ -14,7 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.dal.Form;
 import com.serverless.dal.FormDBTable;
 
-public class DeleteFormUsersHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse>{
+public class DeleteFormUserHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse>{
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
 	@Override
@@ -29,20 +29,29 @@ public class DeleteFormUsersHandler implements RequestHandler<Map<String, Object
 			FormDBTable table = new FormDBTable();
 
 			if(form!=null) {
-			form.deleteUsers(body.get("userID").asText());
-
-			table.save(form);
-			return ApiGatewayResponse.builder()
-      				.setStatusCode(200)
-      				.setObjectBody(form)
-      				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
-      				.build();
+				String userId = body.get("userID").asText();
+				if(form.deleteUsers(userId)) {
+					table.save(form);
+					return ApiGatewayResponse.builder()
+		      				.setStatusCode(200)
+		      				.setObjectBody(form)
+		      				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+		      				.build();
+				}
+				else {
+					LOG.error("User with ID: '" + formId + "' not found in this form.");
+					return ApiGatewayResponse.builder()
+		      				.setStatusCode(404)
+		      				.setObjectBody(form)
+		      				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+		      				.build();
+				}
 			}
 			else {
-				LOG.error("Form with id: '" + "3" + "' not found.");
+				LOG.error("Form with id: '" + formId + "' not found.");
 				return ApiGatewayResponse.builder()
         				.setStatusCode(404)
-        				.setObjectBody("Form with id: '" + "3" + "' not found.")
+        				.setObjectBody("Form with id: '" + formId + "' not found.")
         				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
         				.build();
 			}

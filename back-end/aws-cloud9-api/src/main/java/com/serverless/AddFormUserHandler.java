@@ -9,17 +9,12 @@ import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.dal.Form;
 import com.serverless.dal.FormDBTable;
-import java.util.Collections;
-import java.util.Map;
-import java.util.List;
 
-public class AddFormUsersHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse>{
+public class AddFormUserHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse>{
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
 	@Override

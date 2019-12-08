@@ -73,7 +73,7 @@ functions:
           path: /forms/{id}
           method: delete
   addFormUser:
-    handler: com.serverless.AddFormUsersHandler
+    handler: com.serverless.AddFormUserHandler
     events:
      - http:
           path: /forms/users/{id}
@@ -84,8 +84,8 @@ functions:
      - http:
           path: /forms/users/{id}
           method: get
-  deleteFormUsers:
-    handler: com.serverless.DeleteFormUsersHandler
+  deleteFormUser:
+    handler: com.serverless.DeleteFormUserHandler
     events:
      - http:
           path: /forms/users/del/{id}

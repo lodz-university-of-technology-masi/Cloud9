@@ -9,15 +9,10 @@ import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.dal.Form;
 import com.serverless.dal.FormDBTable;
-import java.util.Collections;
-import java.util.Map;
-import java.util.List;
 
 public class DeleteFormUsersHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse>{
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
@@ -25,6 +20,7 @@ public class DeleteFormUsersHandler implements RequestHandler<Map<String, Object
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
+			LOG.info("Call DeleteFormUsersHanlder::handleRequest(" + input + ", " + context + ")");
 			@SuppressWarnings("unchecked")
 			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
 	        String formId = pathParameters.get("id");
@@ -43,6 +39,7 @@ public class DeleteFormUsersHandler implements RequestHandler<Map<String, Object
       				.build();
 			}
 			else {
+				LOG.error("Form with id: '" + "3" + "' not found.");
 				return ApiGatewayResponse.builder()
         				.setStatusCode(404)
         				.setObjectBody("Form with id: '" + "3" + "' not found.")
@@ -51,6 +48,7 @@ public class DeleteFormUsersHandler implements RequestHandler<Map<String, Object
 			}
 			
 		} catch (IOException e) {
+			LOG.error("Error in deleting users from form: " + e);
 			Response responseBody = new Response("lipa", input);
 			return ApiGatewayResponse.builder()
 					.setStatusCode(500)

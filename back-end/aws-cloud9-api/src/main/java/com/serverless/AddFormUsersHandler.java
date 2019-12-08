@@ -25,16 +25,19 @@ public class AddFormUsersHandler implements RequestHandler<Map<String, Object>, 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
+			LOG.info("Call AaddformUserHandler::handleRequest(" + input + ", " + context + ")");
 			@SuppressWarnings("unchecked")
-			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
+			Map<String,String> pathParameters = (Map<String,String>)input.get("pathParameters");
 	        String formId = pathParameters.get("id");
-			Form form = new FormDBTable().get(formId);
+	        FormDBTable table = new FormDBTable();
+	        Form form = table.get(formId);
 			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
-			FormDBTable table = new FormDBTable();
+			
 			
 			if(form!=null) {
 				String userId = body.get("userID").asText();
 				if(form.findUser(userId)) {
+					LOG.error("User with ID:" + userId + " has already been added to this form");
 					return ApiGatewayResponse.builder()
 		      				.setStatusCode(500)
 		      				.setObjectBody("User with ID:" + userId + " has already been added to this form")
@@ -52,6 +55,7 @@ public class AddFormUsersHandler implements RequestHandler<Map<String, Object>, 
 					}
 			}
 			else {
+				LOG.error("Form with id: '" + formId + "' not found.");
 				return ApiGatewayResponse.builder()
         				.setStatusCode(404)
         				.setObjectBody("Form with id: '" + formId + "' not found.")
@@ -60,6 +64,7 @@ public class AddFormUsersHandler implements RequestHandler<Map<String, Object>, 
 			}
 			
 		} catch (IOException e) {
+			LOG.error("Error in adding user to form: " + e);
 			Response responseBody = new Response("lipa", input);
 			return ApiGatewayResponse.builder()
 					.setStatusCode(500)

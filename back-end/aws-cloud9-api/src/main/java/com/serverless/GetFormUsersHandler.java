@@ -25,6 +25,7 @@ public class GetFormUsersHandler implements RequestHandler<Map<String, Object>, 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
+			LOG.info("Call GetFormUsersHanlder::handleRequest(" + input + ", " + context + ")");
 			@SuppressWarnings("unchecked")
 			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
 	        String formId = pathParameters.get("id");
@@ -38,6 +39,7 @@ public class GetFormUsersHandler implements RequestHandler<Map<String, Object>, 
       				.build();
 			}
 			else {
+				LOG.error("Form with id: '" + formId + "' not found.");
 				return ApiGatewayResponse.builder()
         				.setStatusCode(404)
         				.setObjectBody("Form with id: '" + formId + "' not found.")
@@ -46,6 +48,7 @@ public class GetFormUsersHandler implements RequestHandler<Map<String, Object>, 
 			}
 			
 		} catch (IOException e) {
+			LOG.error("Error in getting users from form: " + e);
 			Response responseBody = new Response("lipa", input);
 			return ApiGatewayResponse.builder()
 					.setStatusCode(500)

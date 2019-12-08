@@ -25,6 +25,7 @@ public class GetUserFormsHandler implements RequestHandler<Map<String, Object>, 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		try {
+			LOG.info("Call GetUserFormsHanlder::handleRequest(" + input + ", " + context + ")");
 			@SuppressWarnings("unchecked")
 			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
 	        String userId = pathParameters.get("id");
@@ -36,6 +37,7 @@ public class GetUserFormsHandler implements RequestHandler<Map<String, Object>, 
       				.build();
 				
 		} catch (IOException e) {
+			LOG.error("Error in getting forms: " + e);
 			Response responseBody = new Response("lipa", input);
 			return ApiGatewayResponse.builder()
 					.setStatusCode(500)

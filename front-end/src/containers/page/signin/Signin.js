@@ -37,7 +37,6 @@ export default class Signin extends Component {
     }
 
     handleFormSubmit = async event => {
-        
         event.preventDefault();
         let errors = [];
         let passwordLen = this.state.password.length;
@@ -55,33 +54,37 @@ export default class Signin extends Component {
             });
             return;
         }
-        
-            await Auth.signIn(
-                this.state.email, 
-                this.state.password
-            ).then(
-                user => {
-                  this.props.userHasAuthenticated(user);
-                  if(user.attributes.profile === "recruiter")
-                    this.props.history.push("/recruiter_panel");
-                  else
-                    this.props.history.push("/user_panel");
-                }
-            )
-            .catch(
-                err => {
-                    let errors = [];
-                    errors.push(err.message);
 
-                    if(errors.length > 0)
-                    {
-                        this.setState({
-                            errors : errors
-                        });
-                        return;
-                    }
+        await Auth.signIn(
+            this.state.email, 
+            this.state.password
+        ).then(
+            user => {
+              this.props.userAuthenticatedObject(user);
+              this.props.userHasAuthenticated(true);
+            //   if(user.attributes.profile === "recruiter")
+            //     this.props.history.push("/recruiter_panel");
+            //   else
+            //     this.props.history.push("/user_panel");
+            }
+        )
+        .catch(
+            err => {
+                let errors = [];
+                errors.push(err.message);
+
+                if(errors.length > 0)
+                {
+                    this.setState({
+                        errors : errors
+                    });
+                    return;
                 }
-            );
+            }
+        );
+
+    
+        
        
     }
 

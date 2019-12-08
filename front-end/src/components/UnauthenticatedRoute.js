@@ -23,7 +23,7 @@ export default ({ component: C, props: cProps, ...rest }) => {
     <Route
       {...rest}
       render={props =>
-        cProps.isAuthenticating === false
+        !cProps.isAuthenticated
           ? <C {...props} {...cProps} />
           : <Redirect
               to={redirect === "" || redirect === null ? "/" : redirect}

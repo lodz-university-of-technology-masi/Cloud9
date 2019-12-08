@@ -86,7 +86,9 @@ export default class Signup extends Component {
                 this.state.password
             ).then(
                 user => {
-                    this.props.userHasAuthenticated(user)
+                    this.props.userAuthenticatedObject(user);
+                    this.props.userHasAuthenticated(true);
+
                     if(this.state.profilType === "recruiter")
                       this.props.history.push("/recruiter_panel");
                     else

@@ -5,9 +5,10 @@ export default ({ component: C, props: cProps, ...rest }) =>
   <Route
     {...rest}
     render={props =>
-        cProps.isAuthenticating
+      cProps.isAuthenticated
         ? <C {...props} {...cProps} />
         : <Redirect
-            to={`/signin?redirect=${props.location.pathname}${props.location.search}`}
+            to={`/signin?redirect=${props.location.pathname}${props.location
+              .search}`}
           />}
   />;

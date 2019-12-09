@@ -14,6 +14,9 @@ public class Form {
 	 private String id;
 	 private String name;
 	 private String creationDate;
+	 private String description;
+	 // time to fill the form in minutes
+	 private int time;
 	 
 	 private Logger logger = LogManager.getLogger(this.getClass());
 	 
@@ -21,6 +24,8 @@ public class Form {
 		logger.info("Call Form::constructor");
 		this.id = null;
 		this.name = null;
+		this.description = null;
+		this.time = 0;
 		this.creationDate = null;
 	}
 	 
@@ -28,6 +33,8 @@ public class Form {
 		 	logger.info("Call Form constructor(JsonNode)");
 			this.id = body.get("id").asText();
 			this.name = body.get("name").asText();
+			this.description = body.get("description").asText();
+			this.time = body.get("time").asInt();
 			this.creationDate = body.get("creationDate").asText();
 		}
 	
@@ -35,6 +42,8 @@ public class Form {
 	 public void update(JsonNode body) {
 		 logger.info("Call Form::update(" + body + ")");
 		 JsonNode newName = body.get("name");
+		 JsonNode newDescription = body.get("description");
+		 JsonNode newTime = body.get("time");
 		 JsonNode newCreationDate = body.get("creationDate");
 		 
 		 if(newName != null) {
@@ -42,6 +51,20 @@ public class Form {
 		 }
 		 else {
 			 logger.warn("Name is null");
+		 }
+		 
+		 if(newDescription != null) {
+			 this.setDescription(newDescription.asText());
+		 }
+		 else {
+			 logger.warn("Description is null");
+		 }
+		 
+		 if(newTime != null) {
+			 this.setTime(newTime.asInt());
+		 }
+		 else {
+			 logger.warn("Time is null");
 		 }
 		 
 		 if(newCreationDate != null) {
@@ -86,9 +109,34 @@ public class Form {
 	    	this.creationDate = creationDate;
 	    }
 	    
+	    @DynamoDBAttribute(attributeName = "description")
+	    public String getDescription() {
+	    	logger.info("Call Form::getDescription() -> " + this.description);
+	    	return this.description;
+	    }
+	    
+	    public void setDescription(String description) {
+	    	logger.info("Call Form::setDescription(" + description + ")");
+	    	this.description = description;
+	    }
+	    
+	    @DynamoDBAttribute(attributeName = "time")
+	    public int getTime() {
+	    	logger.info("Call Form::getTime() -> " + this.time);
+	    	return this.time;
+	    }
+	    
+	    public void setTime(int time) {
+	    	logger.info("Call Form::setTime(" + time + ")");
+	    	this.time = time;
+	    }
+	    
+	    
+	    
 	    @Override
 		public String toString() {
-			return "Form [getId()=" + this.getId() + ", getName()=" + this.getName() + ", getCreationDate()=" + this.getCreationDate() + "]";
+			return "Form [id=" + this.getId() + ", name()=" + this.getName() + ", creationDate()=" + this.getCreationDate() + 
+					", description()" + this.getDescription() + ", time=" + this.getId() + "]";
 		}
 
 }

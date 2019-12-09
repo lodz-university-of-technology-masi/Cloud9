@@ -26,12 +26,11 @@ public class Form {
 		this.name = null;
 		this.description = null;
 		this.time = 0;
-		this.creationDate = this.getCurrentTimeString();
+		this.creationDate = null;
 	}
 	 
 	 public Form(JsonNode body) {
 		 	logger.info("Call Form constructor(JsonNode)");
-			this.id = body.get("id").asText();
 			this.name = body.get("name").asText();
 			this.description = body.get("description").asText();
 			this.time = body.get("time").asInt();

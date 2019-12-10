@@ -15,6 +15,7 @@ service: cloud9-api
 custom:
   formsTableName: 'form-${self:provider.stage}'
   questionsTableName: 'Questions-${self:provider.stage}'
+  solvedFormsTableName: 'SolvedForms-${self:provider.stage}'
   
 provider:
   name: aws
@@ -35,6 +36,7 @@ provider:
   environment:
     FORMS_TABLE_NAME: ${self:custom.formsTableName}
     QUESTIONS_TABLE_NAME: ${self:custom.questionsTableName}
+	SOLVED_FORMS_TABLE_NAME: ${self:custom.solvedFormsTableName}
 
 
 package:
@@ -107,6 +109,20 @@ resources:
             KeyType: HASH
           - AttributeName: description
             KeyType: RANGE
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+
+    SolvedFormsDynamoDBTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.solvedFormsTableName}
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

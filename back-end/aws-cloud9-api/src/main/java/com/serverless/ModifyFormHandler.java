@@ -14,28 +14,35 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.dal.Form;
 import com.serverless.dal.FormDBTable;
 
-public class CreateFormHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
+public class ModifyFormHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
-
+	
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
-		LOG.info("Call CreateFormHandler::handleRequest(" + input + ", " + context + ")");
+		LOG.info("Call ModifyFormHandler::handleRequest(" + input + ", " + context + ")");
 		try {
 			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
 			FormDBTable table = new FormDBTable();
-
-			Form form = new Form(body);
-
-			table.save(form);
-			return ApiGatewayResponse.builder()
-      				.setStatusCode(200)
-      				.setObjectBody(form)
-      				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
-      				.build();
+			Form newForm = table.update(body);
+			
+			if(newForm != null) {				
+				return ApiGatewayResponse.builder()
+						.setStatusCode(200)
+						.setObjectBody(newForm)
+						.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+						.build();
+			}
+			else {
+				return ApiGatewayResponse.builder()
+						.setStatusCode(404)
+						.setObjectBody("Requested form does not exists")
+						.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
+						.build();
+			}
 			
 		} catch (IOException e) {
-			LOG.error("Error in creating form: " + e);
+			LOG.error("Error in modifying form: " + e);
 			Response responseBody = new Response("lipa", input);
 			return ApiGatewayResponse.builder()
 					.setStatusCode(500)
@@ -43,10 +50,7 @@ public class CreateFormHandler implements RequestHandler<Map<String, Object>, Ap
 					.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & serverless"))
 					.build();
 		}
-		
-		
-		
-		
-		
+
 	}
+
 }

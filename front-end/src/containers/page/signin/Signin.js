@@ -37,13 +37,12 @@ export default class Signin extends Component {
     }
 
     handleFormSubmit = async event => {
-        
         event.preventDefault();
         let errors = [];
         let passwordLen = this.state.password.length;
 
-        if (!(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(this.state.email)))
-            errors.push("Musisz wpisać prawidłowy adres mail.");
+        // if (!(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(this.state.email)))
+        //     errors.push("Musisz wpisać prawidłowy adres mail.");
 
         if( passwordLen < 6 || passwordLen > 25 )
             errors.push("Hasło musi posiadać od 6 do 25 znaków.");
@@ -55,27 +54,37 @@ export default class Signin extends Component {
             });
             return;
         }
-        
-            await Auth.signIn(
-                this.state.email, 
-                this.state.password
-            ).then(
-                user => this.props.userHasAuthenticated(user)
-            )
-            .catch(
-                err => {
-                    let errors = [];
-                    errors.push(err.message);
 
-                    if(errors.length > 0)
-                    {
-                        this.setState({
-                            errors : errors
-                        });
-                        return;
-                    }
+        await Auth.signIn(
+            this.state.email, 
+            this.state.password
+        ).then(
+            user => {
+              this.props.userAuthenticatedObject(user);
+              this.props.userHasAuthenticated(true);
+            //   if(user.attributes.profile === "recruiter")
+            //     this.props.history.push("/recruiter_panel");
+            //   else
+            //     this.props.history.push("/user_panel");
+            }
+        )
+        .catch(
+            err => {
+                let errors = [];
+                errors.push(err.message);
+
+                if(errors.length > 0)
+                {
+                    this.setState({
+                        errors : errors
+                    });
+                    return;
                 }
-            );
+            }
+        );
+
+    
+        
        
     }
 

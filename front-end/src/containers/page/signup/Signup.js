@@ -86,8 +86,13 @@ export default class Signup extends Component {
                 this.state.password
             ).then(
                 user => {
-                    this.props.userHasAuthenticated(user)
-                    this.props.history.push("/");
+                    this.props.userAuthenticatedObject(user);
+                    this.props.userHasAuthenticated(true);
+
+                    if(this.state.profilType === "recruiter")
+                      this.props.history.push("/recruiter_panel");
+                    else
+                      this.props.history.push("/user_panel");
                 })
                 .catch(
                     err => {
@@ -136,8 +141,8 @@ export default class Signup extends Component {
         if (profilTypeLen === 0)
             errors.push("Musisz wybrać rodzaj profilu.");
 
-        if (!(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(this.state.email)))
-            errors.push("Musisz wpisać prawidłowy adres mail.");
+        // if (!(/^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[A-Za-z]+$/.test(this.state.email)))
+        //     errors.push("Musisz wpisać prawidłowy adres mail.");
         
         if(errors.length > 0)
         {

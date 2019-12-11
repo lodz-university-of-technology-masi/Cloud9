@@ -32,7 +32,8 @@ provider:
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
       Resource:
-        - { "Fn::GetAtt": ["FormsDynamoDBTable", "Arn" ] }
+        - { "Fn::GetAtt": ["FormsDynamoDBTable", "Arn"] }
+        - { "Fn::GetAtt": ["SolvedFormsDynamoDBTable", "Arn"] }
   environment:
     FORMS_TABLE_NAME: ${self:custom.formsTableName}
     QUESTIONS_TABLE_NAME: ${self:custom.questionsTableName}
@@ -73,12 +74,25 @@ functions:
       - http:
           path: /forms
           method: put
-  deleteProduct:
+  deleteForm:
     handler: com.serverless.DeleteFormHandler
     events:
       - http:
           path: /forms/{id}
           method: delete
+  listSolvedForm:
+    handler: com.serverless.ListSolvedFormHandler
+    events:
+      - http:
+          path: /solvedForms
+          method: get
+  createSolvedForm:
+    handler: com.serverless.CreateSolvedFormHandler
+    events:
+      - http:
+          path: /solvedForms
+          method: post 
+
 resources:
   Resources:
     FormsDynamoDBTable:

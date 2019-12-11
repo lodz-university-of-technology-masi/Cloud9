@@ -54,15 +54,21 @@ public class Question {
     	this.language = body.get("language").asInt();
     	this.form_membership = body.get("form_id").asText();
     	ObjectMapper mapper = new ObjectMapper();
-    	String answers = body.get("answer_list").asText(); //do zmiany
+    	String answers = body.get("answer_list").toString(); //do zmiany
     	logger.info("answers in string"+answers);
-    	try {
-			String[] ans = mapper.readValue(answers, String[].class);
-		} catch (IOException e) {
-			logger.info("answers in string"+e);
-		}
+    	String[] answers_array = QuestionDBTable.singleChars(answers);
     	
-    	this.answer_list=null;
+    	
+    	logger.info("answers in string"+answers_array);
+    	this.answer_list= new ArrayList<String>();	
+    	for (int i =0; i< answers_array.length; i++)
+    	{
+    		if(answers_array[i].equals("[")== false && answers_array[i].equals("]")== false && answers_array[i].equals(",")== false) {
+    		this.answer_list.add(answers_array[i]);   }		
+    	}
+    	logger.info("answers in answer_list"+answer_list);
+    	//this.answer_list=null;
+    	//answers_array[i]
     	
     }
     	

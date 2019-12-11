@@ -1,6 +1,8 @@
 package com.serverless.dal;
 
+
 import java.io.IOException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -178,5 +180,9 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
         return true;
     }
     
+    
+    public static String[] singleChars(String s) {
+        return s.split("\"");
+    }
     
 }

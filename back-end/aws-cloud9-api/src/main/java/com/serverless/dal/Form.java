@@ -33,6 +33,7 @@ public class Form {
 		this.time = 0;
 		this.creationDate = null;
 		this.users = new HashMap<String,String>();
+    }
      public Form(JsonNode body) {
 		 	logger.info("Call Form constructor(JsonNode)");
 			this.name = body.get("name").asText();

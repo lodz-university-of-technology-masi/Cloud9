@@ -1,10 +1,12 @@
 package com.serverless.dal;
 
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
@@ -14,9 +16,13 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBScanExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedQueryList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.serverless.Handler;
+
+
 @DynamoDBTable(tableName = "PLACEHOLDER_PRODUCTS_TABLE_NAME")
 public class QuestionDBTable {
-
+private Logger logger = LogManager.getLogger(this.getClass());
 private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABLE_NAME");
     
 	private static DynamoDBAdapter db_adapter;
@@ -25,14 +31,10 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
 
 
 
-    
-
-    
-    
    
 
 	public QuestionDBTable() {
-	        // build the mapper config
+    		logger.info("QuestionDBTable constructor");
 	        DynamoDBMapperConfig mapperConfig = DynamoDBMapperConfig.builder()
 	            .withTableNameOverride(new DynamoDBMapperConfig.TableNameOverride(QUESTIONS_TABLE_NAME))
 	            .build();
@@ -42,19 +44,17 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
 	        // create the mapper with config
 	        this.mapper = this.db_adapter.createDbMapper(mapperConfig);
 	}
-	
+		   
+	   
 	   public List<Question> list() throws IOException {
 	    	DynamoDBScanExpression scanExp = new DynamoDBScanExpression();
+
 	        List<Question> results = this.mapper.scan(Question.class, scanExp);
+	        logger.info("Call QuestionDBTable::list() -> " + results);
 	        return results;
 	    }
-	   
-	   
-	   public List<ClosedQuestion> listclosed() throws IOException {
-	    	DynamoDBScanExpression scanExp = new DynamoDBScanExpression();
-	        List<ClosedQuestion> results = this.mapper.scan(ClosedQuestion.class, scanExp);
-	        return results;
-	    }
+
+	
 
 	
 	    
@@ -63,21 +63,26 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
 	
 	// methods
     public Boolean ifTableExists() {
-        return this.client.describeTable(QUESTIONS_TABLE_NAME).getTable().getTableStatus().equals("ACTIVE");
+        boolean result = this.client.describeTable(QUESTIONS_TABLE_NAME).getTable().getTableStatus().equals("ACTIVE");
+        logger.info("Call FormDBTable::ifTableExists() -> " + result);
+        return result;
     }
     
+    
  
-    public ClosedQuestion get(String id) throws IOException {
-    	ClosedQuestion question = null;
+    public Question get(String id) throws IOException {
+    	logger.info("Call QuestionDBTable::get(" + id + ")");
+    	
+    	Question question = null;
 
         HashMap<String, AttributeValue> av = new HashMap<String, AttributeValue>();
         av.put(":v1", new AttributeValue().withS(id));
 
-        DynamoDBQueryExpression<ClosedQuestion> queryExp = new DynamoDBQueryExpression<ClosedQuestion>()
+        DynamoDBQueryExpression<Question> queryExp = new DynamoDBQueryExpression<Question>()
             .withKeyConditionExpression("id = :v1")
             .withExpressionAttributeValues(av);
 
-        PaginatedQueryList<ClosedQuestion> result = this.mapper.query(ClosedQuestion.class, queryExp);
+        PaginatedQueryList<Question> result = this.mapper.query(Question.class, queryExp);
         if(result.size() > 0) {
         	question = result.get(0);
         }
@@ -86,112 +91,90 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
     
   
     
-    public  List<ClosedQuestion> getFormQuestions(String formid) throws IOException {
-    	DynamoDBScanExpression scanExp = new DynamoDBScanExpression();
-        List<ClosedQuestion> results = this.mapper.scan(ClosedQuestion.class, scanExp);
-        List<ClosedQuestion> res = new ArrayList<ClosedQuestion>();
-        for (int i=0; i< results.size(); i++)
+    public  List<Question> getFormQuestions(String formId) throws IOException {
+    	QuestionDBTable questionTable=new QuestionDBTable();
+    	List<Question> questions = questionTable.list();
+    	List<Question> res = new ArrayList<Question>();
+    	for (Question question : questions)
         {
-        	if (results.get(i).getForm_membership()!=null) {
-        	if(results.get(i).getForm_membership().equals(formid))
-        	{
-        		res.add(results.get(i));
-        	}
-        	}
+        	if (question.getForm_membership()!=null) {
+            	if(question.getForm_membership().equals(formId))
+            	{
+            		res.add(question);
+            	}
+            	}
+        	
         }
-        
-        
+
         return res;
     }
     
-    public  Boolean deleteQuestionFromForm(String questionid) throws IOException {
-    	Question question = null;
-
-        HashMap<String, AttributeValue> av = new HashMap<String, AttributeValue>();
-        av.put(":v1", new AttributeValue().withS(questionid));
-
-        DynamoDBQueryExpression<Question> queryExp = new DynamoDBQueryExpression<Question>()
-            .withKeyConditionExpression("id = :v1")
-            .withExpressionAttributeValues(av);
-
-        PaginatedQueryList<Question> result = this.mapper.query(Question.class, queryExp);
-        if (result.size() > 0) {
-        	question = result.get(0);
-
+    
+    public  List<Question> getRecruiterQuestions(String recruiterId) throws IOException {
+    	QuestionDBTable questionTable=new QuestionDBTable();
+    	List<Question> questions = questionTable.list();
+    	List<Question> res = new ArrayList<Question>();
+    	for (Question question : questions)
+        {
+        	if (question.getRecruiter_id()!=null) {
+            	if(question.getRecruiter_id().equals(recruiterId))
+            	{
+            		res.add(question);
+            	}
+            	}
+        	
         }
+
+        return res;
+    }
+    
+    
+    
+    public Question update(JsonNode newBody) throws IOException {
+    	logger.info("Call QuestionDBTable::update(" + newBody + ")");
+    	String id = newBody.get("id").asText();
+    	Question question = this.get(id);
+    	if(question == null) {
+    		logger.error("Question with id " + id + " not found");
+    		return null;
+    	}
+    	question.update(newBody);
+    	this.mapper.save(question);
+    	return question;
+    }
+
+    
+
+    
+    
+    
+    public void save(Question newQuestion) throws IOException {
+    	try {
+    	logger.info("Call QuestionDBTable::save(" + newQuestion + ")");
+        this.mapper.save(newQuestion);
+    	}
+    	catch (Exception ex)
+    	{ }
         
-        question.setForm_membership(null);
-        this.mapper.save(question);
-        
-        return true;
     }
     
-    public  Boolean createMembership(String questionid, String formid) throws IOException {
-    	Question question = null;
 
-        HashMap<String, AttributeValue> av = new HashMap<String, AttributeValue>();
-        av.put(":v1", new AttributeValue().withS(questionid));
-
-        DynamoDBQueryExpression<Question> queryExp = new DynamoDBQueryExpression<Question>()
-            .withKeyConditionExpression("id = :v1")
-            .withExpressionAttributeValues(av);
-
-        PaginatedQueryList<Question> result = this.mapper.query(Question.class, queryExp);
-        if (result.size() > 0) {
-        	question = result.get(0);
-
-        }
-        
-        question.setForm_membership(formid);
-        this.mapper.save(question);
-        
-        return true;
-    }
-    
-    
-    public  ClosedQuestion setCorrectAnswerr(String id, String answer) throws IOException {
-    	ClosedQuestion closed = null;
-
-        HashMap<String, AttributeValue> av = new HashMap<String, AttributeValue>();
-        av.put(":v1", new AttributeValue().withS(id));
-
-        DynamoDBQueryExpression<ClosedQuestion> queryExp = new DynamoDBQueryExpression<ClosedQuestion>()
-            .withKeyConditionExpression("id = :v1")
-            .withExpressionAttributeValues(av);
-
-        PaginatedQueryList<ClosedQuestion> result = this.mapper.query(ClosedQuestion.class, queryExp);
-        if(result.size() > 0) {
-        	closed = result.get(0);
-        }
-        closed.setCorrect_answer(answer);
-       return closed;
-    }
-    
-    
-    
-    
-    
-    public void save(Question newquestion) throws IOException {
-        this.mapper.save(newquestion);
-    }
-    
-    public void save(ClosedQuestion newquestion) throws IOException {
-        this.mapper.save(newquestion);
-    }
-    
 
     
  
     
     public Boolean delete(String id) throws IOException {
-    	Question question = null;
+        Question question = null;
 
         // get product if exists
-    	question = get(id);
+        question = this.get(id);
         if (question != null) {
+          logger.info("Call QuestionDBTable::delete(" + id + ")-> OK");
           this.mapper.delete(question);
-        } 
-        
+        } else {
+          logger.warn("Call QuestionDBTable::delete(" + id + ")-> does not exist.");
+          return false;
+        }
         return true;
     }
     

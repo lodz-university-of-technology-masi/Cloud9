@@ -1,47 +1,37 @@
-package com.serverless.QuestionHandlers;
+package QuestionHandlers;
 
 import java.util.Collections;
 import java.util.Map;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.serverless.ApiGatewayResponse;
 import com.serverless.Handler;
 import com.serverless.Response;
-import com.serverless.dal.ClosedQuestion;
-import com.serverless.dal.Form;
-import com.serverless.dal.FormDBTable;
 import com.serverless.dal.Question;
 import com.serverless.dal.QuestionDBTable;
-
-import java.util.Collections;
-import java.util.Map;
 import java.util.List;
-public class ListFormQuestions implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
+
+public class ListQuestionHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
+		LOG.info("Call ListQuestionHandler::handleRequest(" + input + ", " + context + ")");
 		try {
-			 // get pathParameters
-			@SuppressWarnings("unchecked")
-			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
-	        String formId = pathParameters.get("formid");
-
-	       List<ClosedQuestion> question = new QuestionDBTable().getFormQuestions(formId);
+	        // get all forms
+			 List<Question> questions = new QuestionDBTable().list();
 	        
-	      
+	        // send the response back
 	        return ApiGatewayResponse.builder()
 	    				.setStatusCode(200)
-	    				.setObjectBody(question)
+	    				.setObjectBody(questions)
 	    				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
 	    				.build();
 	    } catch (Exception ex) {
-	    	LOG.error("Error in listing forms: " + ex);
+	    	LOG.error("Error in listing questions: " + ex);
 
 	        // send the error response back
 	  			Response responseBody = new Response("Error in listing forms: ", input);

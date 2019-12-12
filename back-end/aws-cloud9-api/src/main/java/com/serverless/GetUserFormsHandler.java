@@ -9,33 +9,29 @@ import org.apache.logging.log4j.Logger;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.serverless.dal.Form;
 import com.serverless.dal.FormDBTable;
 
-public class CreateFormHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
+public class GetUserFormsHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse>{
 	private static final Logger LOG = LogManager.getLogger(Handler.class);
 
 	@Override
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
-		LOG.info("Call CreateFormHandler::handleRequest(" + input + ", " + context + ")");
 		try {
-			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
-			FormDBTable table = new FormDBTable();
+			LOG.info("Call GetUserFormsHanlder::handleRequest(" + input + ", " + context + ")");
+			@SuppressWarnings("unchecked")
+			Map<String,String> pathParameters =  (Map<String,String>)input.get("pathParameters");
+	        String userId = pathParameters.get("id");
 
-			Form form = new Form(body);
-
-			table.save(form);
 			return ApiGatewayResponse.builder()
       				.setStatusCode(200)
-      				.setObjectBody(form)
+      				.setObjectBody(new FormDBTable().getForms(userId))
       				.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & Serverless"))
       				.build();
-			
+				
 		} catch (IOException e) {
-			LOG.error("Error in creating form: " + e);
+			LOG.error("Error in getting forms: " + e);
 			Response responseBody = new Response("lipa", input);
 			return ApiGatewayResponse.builder()
 					.setStatusCode(500)
@@ -43,10 +39,5 @@ public class CreateFormHandler implements RequestHandler<Map<String, Object>, Ap
 					.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & serverless"))
 					.build();
 		}
-		
-		
-		
-		
-		
 	}
 }

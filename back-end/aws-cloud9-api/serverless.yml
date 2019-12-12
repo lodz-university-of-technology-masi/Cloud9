@@ -48,8 +48,9 @@ functions:
     handler: com.serverless.Handler
     events:
       - http:
-          path: /test
+          path: /test/
           method: get
+  
   listForm:
     handler: com.serverless.ListFormHandler
     events:
@@ -80,6 +81,31 @@ functions:
       - http:
           path: /forms/{id}
           method: delete
+  addFormUser:
+    handler: com.serverless.AddFormUserHandler
+    events:
+     - http:
+          path: /forms/users/{id}
+          method: post
+  getFormUsers:
+    handler: com.serverless.GetFormUsersHandler
+    events:
+     - http:
+          path: /forms/users/{id}
+          method: get
+  deleteFormUser:
+    handler: com.serverless.DeleteFormUserHandler
+    events:
+     - http:
+          path: /forms/users/del/{id}
+          method: post
+  getUserForms:
+    handler: com.serverless.GetUserFormsHandler
+    events:
+     - http:
+          path: /forms/users/user/{id}
+          method: get
+          
   listSolvedForm:
     handler: com.serverless.ListSolvedFormHandler
     events:
@@ -92,7 +118,7 @@ functions:
       - http:
           path: /solvedForms
           method: post 
-
+          
 resources:
   Resources:
     FormsDynamoDBTable:

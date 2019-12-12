@@ -11,7 +11,6 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 
 import com.serverless.dal.FormDBTable;
 
-
 public class DeleteFormHandler implements RequestHandler<Map<String, Object>, ApiGatewayResponse> {
 
 	private static final Logger LOG = LogManager.getLogger(Handler.class);

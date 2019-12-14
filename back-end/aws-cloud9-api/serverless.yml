@@ -34,6 +34,7 @@ provider:
       Resource:
         - { "Fn::GetAtt": ["FormsDynamoDBTable", "Arn"] }
         - { "Fn::GetAtt": ["SolvedFormsDynamoDBTable", "Arn"] }
+        - { "Fn::GetAtt": ["QuestionsDynamoDBTable", "Arn" ] }
   environment:
     FORMS_TABLE_NAME: ${self:custom.formsTableName}
     QUESTIONS_TABLE_NAME: ${self:custom.questionsTableName}
@@ -118,6 +119,48 @@ functions:
       - http:
           path: /solvedForms
           method: post 
+  createQuestion:
+    handler: QuestionHandlers.CreateQuestionHandler
+    events:
+      - http:
+          path: /question
+          method: post
+  getQuestion:
+    handler: QuestionHandlers.GetQuestionHandler
+    events:
+      - http:
+          path: /question/{id}
+          method: get
+  listQuestion:
+    handler: QuestionHandlers.ListQuestionHandler
+    events:
+      - http:
+          path: /question
+          method: get
+  listFormQuestion:
+    handler: QuestionHandlers.ListFormQuestionsHandler
+    events:
+      - http:
+          path: /formquestion/{formid}
+          method: get
+  listRecruiterQuestion:
+    handler: QuestionHandlers.GetRecruiterQuestionsHandler
+    events:
+      - http:
+          path: /recruiterquestion/{recruiterid}
+          method: get
+  deleteQuestion:
+    handler: QuestionHandlers.DeleteQuestionHandler
+    events:
+      - http:
+          path: /question/{id}
+          method: delete
+  updateQuestion:
+    handler: QuestionHandlers.ModifyQuestionHandler
+    events:
+      - http:
+          path: /questionmodify
+          method: put 
           
 resources:
   Resources:
@@ -142,13 +185,9 @@ resources:
         AttributeDefinitions:
           - AttributeName: id
             AttributeType: S
-          - AttributeName: description
-            AttributeType: S
         KeySchema:
           - AttributeName: id
             KeyType: HASH
-          - AttributeName: description
-            KeyType: RANGE
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

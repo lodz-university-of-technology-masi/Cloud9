@@ -94,11 +94,8 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
     	List<Question> res = new ArrayList<Question>();
     	for (Question question : questions)
         {
-        	if (question.getForm_membership()!=null) {
-            	if(question.getForm_membership().equals(formId))
-            	{
+        	if (question.getForm_membership()!=null && question.getForm_membership().equals(formId)) {
             		res.add(question);
-            	}
             	}
         	
         }
@@ -113,11 +110,8 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
     	List<Question> res = new ArrayList<Question>();
     	for (Question question : questions)
         {
-        	if (question.getRecruiter_id()!=null) {
-            	if(question.getRecruiter_id().equals(recruiterId))
-            	{
-            		res.add(question);
-            	}
+        	if (question.getRecruiter_id()!=null && question.getRecruiter_id().equals(recruiterId)) {
+        			res.add(question);
             	}
         	
         }
@@ -175,17 +169,5 @@ private static final String QUESTIONS_TABLE_NAME = System.getenv("QUESTIONS_TABL
         return true;
     }
     
-    
-    public static List<String> singleChars(String s) {
-        String[] answersInTable = s.split("\"");
-        List <String> answer_list= new ArrayList<String>();	
-    	for (int i =0; i< answersInTable.length; i++)
-    	{
-    		if(answersInTable[i].equals("[")== false && answersInTable[i].equals("]")== false && answersInTable[i].equals(",")== false) {
-    		answer_list.add(answersInTable[i]);   }		
-    	}
-    	
-    	return answer_list;
-    }
     
 }

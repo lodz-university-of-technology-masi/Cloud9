@@ -1,11 +1,13 @@
 package com.serverless.dal;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 public class Question {
@@ -26,7 +28,26 @@ public class Question {
     
     public Question(JsonNode body) {
     logger.info("Call Question constructor(JsonNode)");
-    if (body.get("type").asText().equals("0")) {
+    switch (body.get("type").asInt()) {
+    case 0:
+    	setNumberQuestion(body);
+    case 1:
+    	setClosedQuestion(body);
+    case 2:
+    	setOpenQuestion(body);
+}}
+    
+    public void setNumberQuestion(JsonNode body) {
+    	this.id = body.get("id").asText();
+    	this.type = body.get("type").asText();
+    	this.question = body.get("name").asText();
+    	this.answer = body.get("answer").asInt();
+    	this.recruiter_id = body.get("recruiter_id").asText();
+    	this.language = body.get("language").asInt();
+    	this.form_membership = body.get("form_id").asText();	
+    	
+    }
+    public void setClosedQuestion(JsonNode body) {
     	this.id = body.get("id").asText();
     	this.type = body.get("type").asText();
     	this.question = body.get("name").asText();
@@ -34,33 +55,21 @@ public class Question {
     	this.recruiter_id = body.get("recruiter_id").asText();
     	this.language = body.get("language").asInt();
     	this.form_membership = body.get("form_id").asText();
-    }
+    	this.answer_list = new ArrayList<String>();
+    	ObjectMapper mapper = new ObjectMapper();
+		this.answer_list = mapper.convertValue(body.get("answer_list"), ArrayList.class);	
     	
-    if (body.get("type").asText().equals("1")) {
-    	this.id = body.get("id").asText();
-    	this.type = body.get("type").asText();
-    	this.question = body.get("name").asText();
-    	this.answer = body.get("answer").asInt();
-    	this.recruiter_id = body.get("recruiter_id").asText();
-    	this.language = body.get("language").asInt();
-    	this.form_membership = body.get("form_id").asText();
-    	String answers = body.get("answer_list").toString(); //do zmiany
-    	logger.info("answers in string"+answers);
-    	this.answer_list =QuestionDBTable.singleChars(answers);
-    	logger.info("answers in answer_list"+answer_list);  	
     }
-    	
-    if (body.get("type").asText().equals("2")) {
-    	this.id = body.get("id").asText();
-    	this.type = body.get("type").asText();
-    	this.question = body.get("name").asText();
-    	this.recruiter_id = body.get("recruiter_id").asText();
-    	this.language = body.get("language").asInt();
-    	this.form_membership = body.get("form_id").asText();
 
-    }
+    public void setOpenQuestion(JsonNode body) {
+    	this.id = body.get("id").asText();
+    	this.type = body.get("type").asText();
+    	this.question = body.get("name").asText();
+    	this.recruiter_id = body.get("recruiter_id").asText();
+    	this.language = body.get("language").asInt();
+    	this.form_membership = body.get("form_id").asText();
     	
-    };
+    }
 
    
     public void update(JsonNode body) {

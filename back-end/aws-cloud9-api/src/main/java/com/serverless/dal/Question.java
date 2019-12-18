@@ -37,7 +37,7 @@ public class Question {
     	setOpenQuestion(body);
 }}
     
-    public void setNumberQuestion(JsonNode body) {
+    private void setNumberQuestion(JsonNode body) {
     	this.id = body.get("id").asText();
     	this.type = body.get("type").asText();
     	this.question = body.get("name").asText();
@@ -47,7 +47,7 @@ public class Question {
     	this.form_membership = body.get("form_id").asText();	
     	
     }
-    public void setClosedQuestion(JsonNode body) {
+    private void setClosedQuestion(JsonNode body) {
     	this.id = body.get("id").asText();
     	this.type = body.get("type").asText();
     	this.question = body.get("name").asText();
@@ -61,7 +61,7 @@ public class Question {
     	
     }
 
-    public void setOpenQuestion(JsonNode body) {
+    private void setOpenQuestion(JsonNode body) {
     	this.id = body.get("id").asText();
     	this.type = body.get("type").asText();
     	this.question = body.get("name").asText();
@@ -83,60 +83,28 @@ public class Question {
 		 JsonNode newLanguage = body.get("language");
 		 JsonNode newAnswer_list = body.get("answer_list");
 
-		 
-		 
-		 
-		 if(newId != null) {
-			 this.setId(newId.asText());
-		 }
-		 else {
-			 logger.warn("Id is null");
-		 }
-		 
-		 if(newType != null) {
-			 this.setType(newType.asText());
-		 }
-		 else {
-			 logger.warn("newType is null");
-		 }
-		 
-		 if(newQuestion != null) {
-			 this.setQuestion((newQuestion.asText()));
-		 }
-		 else {
-			 logger.warn("Quesrtion is null");
-		 }
-		 if(newRecrutierId != null) {
-			 this.setRecruiter_id((newRecrutierId.asText()));
-		 }
-		 else {
-			 logger.warn("recruiterid is null");
-		 }
-		 if(newForm_membership != null) {
-			 this.setForm_membership((newForm_membership.asText()));
-		 }
-		 else {
-			 logger.warn("membership is null");
-		 }
-		 if(newLanguage != null) {
-			 this.setLanguage((newLanguage.asInt()));
-		 }
-		 else {
-			 logger.warn("Language is null");
-		 }
-		 if(newAnswer != null) {
-			 this.setAnswer((newAnswer.asInt()));
-		 }
-		 else {
-			 logger.warn("Answer is null");
-		 }
+		 if(newId != null) { this.setId(newId.asText()); }
+		 else {logger.warn("Id is null"); }
+		 if(newType != null) { this.setType(newType.asText()); }
+		 else { logger.warn("newType is null"); }
+		 if(newQuestion != null) { this.setQuestion((newQuestion.asText())); }
+		 else {	 logger.warn("Quesrtion is null"); }
+		 if(newRecrutierId != null) { this.setRecruiter_id((newRecrutierId.asText()));	 }
+		 else {	 logger.warn("recruiterid is null"); }
+		 if(newForm_membership != null) {	 this.setForm_membership((newForm_membership.asText())); }
+		 else { logger.warn("membership is null"); }
+		 if(newLanguage != null) {	 this.setLanguage((newLanguage.asInt())); }
+		 else {	 logger.warn("Language is null");	 }
+		 if(newAnswer != null) {	 this.setAnswer((newAnswer.asInt())); }
+		 else {	 logger.warn("Answer is null"); }
 		 if(newAnswer_list != null) {
-			 this.setAnswer((newAnswer_list.asInt()));
-		 }
-		 else {
-			 logger.warn("Answer is null");
-		 }
+			 ObjectMapper mapper = new ObjectMapper();
+			 this.answer_list = mapper.convertValue(body.get("answer_list"), ArrayList.class); }
+		 else { logger.warn("Answer is null");} 
 	 }
+    
+   
+	
     
     @DynamoDBHashKey(attributeName = "id")
 	public String getId() {

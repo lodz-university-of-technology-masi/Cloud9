@@ -106,12 +106,17 @@ functions:
      - http:
           path: /forms/users/user/{id}
           method: get
-          
   listSolvedForm:
-    handler: com.serverless.ListSolvedFormHandler
+    handler: com.serverless.ListSolvedFormsHandler
     events:
       - http:
           path: /solvedForms
+          method: get
+  getSolvedForm:
+    handler: com.serverless.GetSolvedFormHandler
+    events:
+      - http:
+          path: /solvedForms/{id}
           method: get
   createSolvedForm:
     handler: com.serverless.CreateSolvedFormHandler

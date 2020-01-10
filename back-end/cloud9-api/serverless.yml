@@ -175,6 +175,13 @@ functions:
           path: form/recruiter/{id}
           method: get
           cors: true
+  translate-form:
+    handler: com.serverless.handlers.translate.AddTranslateForm
+    events:
+      - http:
+          path: forms/{id}/translate/
+          method: post
+          cors: true
 resources:
   Resources:
     FormsDynamoDBTable:

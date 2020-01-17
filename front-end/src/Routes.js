@@ -14,8 +14,10 @@ const AsyncNotFound = asyncComponent(() => import("./containers/error/NotFound")
 const AsyncRecruiterPanel = asyncComponent(() => import("./containers/recruiter/main/Main"));
 const AsyncUserPanel = asyncComponent(() => import("./containers/user/main/Main"));
 const AsyncVerifyEmail = asyncComponent(() => import("./containers/page/verifyemail/verifyEmail"));
-const AsyncRecruiterAddForm = asyncComponent(() => import("./containers/recruiter/addform/AddForm"));
-
+const AsyncRecruiterAddForm = asyncComponent(() => import("./containers/recruiter/createForm/addform/AddForm"));
+const AsyncRecruiterAddUserToForm = asyncComponent(() => import("./containers/recruiter/createForm/addUserToForm/AddUser"));
+const AsyncRecruiterAddQuestionToForm = asyncComponent(() => import("./containers/recruiter/createForm/addQuestionToForm/AddQuestion"))
+const MainRecruiterGetForm = asyncComponent(() => import("./containers/recruiter/modifyForm/modifyForm/ModifyForm"))
 export default ({ childProps }) =>
   <Switch>
     <AppliedRoute
@@ -42,6 +44,25 @@ export default ({ childProps }) =>
       component={AsyncRecruiterAddForm}
       props={childProps}
     />
+    <RecruiterRoute
+      path="/recruiter_panel/forms/:id/users"
+      exact
+      component={AsyncRecruiterAddUserToForm}
+      props={childProps}
+    />
+    <RecruiterRoute
+      path="/recruiter_panel/forms/:id/questions"
+      exact
+      component={AsyncRecruiterAddQuestionToForm}
+      props={childProps}
+    />
+    <RecruiterRoute
+      path="/recruiter_panel/forms/:id"
+      exact
+      component={MainRecruiterGetForm}
+      props={childProps}
+    />
+
     <UserRoute
       path="/user_panel"
       exact

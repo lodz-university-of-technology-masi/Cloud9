@@ -24,17 +24,7 @@ public class ListFormsHandler implements RequestHandler<Map<String, Object>, Api
         LOG.info("Call ListFormsHandler::handleRequest(" + input + ", " + context + ")");
         try {
             List<Form> forms = new FormDBTable().listForms();
-            List<FormPojo>  formsPojo = new ArrayList<>();
-            for(Form form: forms) {
-                if(form.getUsers() != null) {
-                    List<User> users = new CognitoServices().listUser(form.getUsers());
-                    formsPojo.add(new FormPojo(form.getId(), form.getName(), form.getDescription(), form.getCreationDate(), form.getRecruiterId(), form.getTime(),form.getLang(), users));
-                }
-                else
-                    formsPojo.add(new FormPojo(form.getId(), form.getName(), form.getDescription(), form.getCreationDate(), form.getRecruiterId(), form.getTime(),form.getLang(), null));
-
-            }
-            return ApiRespnsesHandlerPojo.sendResponse(formsPojo, 200);
+            return ApiRespnsesHandlerPojo.sendResponse(forms, 200);
         }
         catch (Exception e){
             LOG.error("ListFormsHandler Exception ->" + e.toString());

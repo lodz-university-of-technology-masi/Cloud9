@@ -33,6 +33,9 @@ public class UpdateFormHandler implements RequestHandler<Map<String, Object>, Ap
 
         if(formInputPojo.getLang() != null)
             form.setLang(formInputPojo.getLang());
+
+        if(formInputPojo.getUsers() != null)
+            form.setUsers(formInputPojo.getUsers());
         table.update(form);
 
         LOG.info("Update form after ->" + form.toString());

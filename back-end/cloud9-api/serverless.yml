@@ -6,7 +6,9 @@ custom:
   formSolutionsTableName: 'form-solutions-${self:provider.stage}'
 provider:
   name: aws
-  runtime: java8
+  runtime: java11
+  timeout: 10
+  memorySize: 3000
   stage: ${opt:stage, 'prod'}
   region: ${opt:region, 'us-east-1'}
   iamRoleStatements:
@@ -20,11 +22,13 @@ provider:
         - dynamodb:DeleteItem
         - cognito-idp:ListUsers
         - cognito-idp:AdminListGroupsForUser
+        - s3:*
       Resource:
         - { "Fn::GetAtt": ["FormsDynamoDBTable", "Arn"] }
         - { "Fn::GetAtt": ["QuestionsDynamoDBTable", "Arn" ] }
         - { "Fn::GetAtt": ["FormSolutionsDynamoDBTable", "Arn" ] }
         - 'arn:aws:cognito-idp:us-east-1:376153185365:userpool/us-east-1_1Q2XS2AE4'
+        - 'arn:aws:s3:::upload-file-cloud9-dev-hdasbdhsabd/*'
   environment:
     RECRUITER_PASSWORD: ${self:custom.passwordRecruiter}
     FORMS_TABLE_NAME: ${self:custom.formsTableName}
@@ -91,6 +95,13 @@ functions:
           path: forms/user/{id}
           method: get
           cors: true
+  find-user-form-all:
+    handler: com.serverless.handlers.form.ListFormForUserAll
+    events:
+      - http:
+          path: forms/user/{id}/all
+          method: get
+          cors: true
   get-form:
     handler: com.serverless.handlers.form.GetFormHandler
     events:
@@ -124,6 +135,13 @@ functions:
     events:
       - http:
           path: forms/{id}/questions
+          method: get
+          cors: true
+  list-question-without-lang-for-form:
+    handler: com.serverless.handlers.question.ListQuestionsWithoutLangForForm
+    events:
+      - http:
+          path: forms/{id}/questions/all
           method: get
           cors: true
   delete-question:
@@ -182,6 +200,28 @@ functions:
           path: forms/{id}/translate/
           method: post
           cors: true
+  list-solveform-for-recruiter:
+    handler: com.serverless.handlers.solveform.ListFormSolutionsHandler
+    events:
+      - http:
+          path: solveform/form/{id}
+          method: get
+          cors: true
+  get-solveform-for-recruiter:
+    handler: com.serverless.handlers.solveform.GetFormSolutionsHandler
+    events:
+      - http:
+          path: solveform/{id}
+          method: get
+          cors: true
+  import-form-csv:
+    handler: com.serverless.handlers.csv.ImportCSVHandler
+    events:
+      - http:
+          path: form/{id}/import
+          method: post
+          cors: true
+
 resources:
   Resources:
     FormsDynamoDBTable:

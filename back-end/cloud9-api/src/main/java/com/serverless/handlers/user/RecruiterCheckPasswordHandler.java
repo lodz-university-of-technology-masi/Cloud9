@@ -6,6 +6,10 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.serverless.handlers.pojo.ApiRespnsesHandlerPojo;
+import com.serverless.handlers.pojo.CheckRecruiterPasswordPojo;
+import com.serverless.handlers.pojo.FormInputPojo;
+import com.serverless.handlers.pojo.ResponseErrorMessagePojo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,26 +27,19 @@ public class RecruiterCheckPasswordHandler implements RequestHandler<Map<String,
 	public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
 		LOG.info("Call RecruiterCheckPasswordHandler::handleRequest(" + input + ", " + context + ")");
 		try {
-			String checkPassword;
 			JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
-			if(body.get("name").asText().compareTo(RECRUITER_PASSWORD) == 0)
-				checkPassword = "{\"status\": \"true\"}";
+			CheckRecruiterPasswordPojo checkRecruiterPasswordPojo = new ObjectMapper().convertValue(body, CheckRecruiterPasswordPojo.class);
+			if(checkRecruiterPasswordPojo.getName() == null)
+				return ApiRespnsesHandlerPojo.sendResponse("error in body", 500);
+
+			if(checkRecruiterPasswordPojo.getName().compareTo(RECRUITER_PASSWORD) == 0)
+				return ApiRespnsesHandlerPojo.sendResponse("ok", 200);
 			else
-				checkPassword = "{\"status\": \"false\"}";
-			LOG.info("Check Password:" + checkPassword);
-			Response responseBody = new Response(checkPassword, input);
-			return ApiGatewayResponse.builder()
-					.setStatusCode(200)
-					.setObjectBody(responseBody)
-					.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & serverless"))
-					.build();
+				return ApiRespnsesHandlerPojo.sendResponse("bad password", 200);
 
 		} catch (IOException e) {
-			return ApiGatewayResponse.builder()
-					.setStatusCode(500)
-					.setObjectBody("Error in check recruiter password")
-					.setHeaders(Collections.singletonMap("X-Powered-By", "AWS Lambda & serverless"))
-					.build();
+			LOG.error("RecruiterCheckPasswordHandler Exception ->" + e.toString());
+			return ApiRespnsesHandlerPojo.sendResponse(new ResponseErrorMessagePojo(e.toString()), 500);
 		}
 	}
 }

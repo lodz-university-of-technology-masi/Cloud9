@@ -44,6 +44,7 @@ public class AddCheckAnswersHandler implements RequestHandler<Map<String, Object
         }
         return checkAnswers;
     }
+
     public ApiGatewayResponse handleRequest(Map<String, Object> input, Context context) {
         LOG.info("Call AddCheckAnswersHandler::handleRequest(" + input + ", " + context + ")");
         try{
@@ -64,7 +65,7 @@ public class AddCheckAnswersHandler implements RequestHandler<Map<String, Object
             }
             List<CheckAnswersFormPojo> checkAnswers = Arrays.asList(
                     new ObjectMapper().convertValue(
-                            body.get("answers"),
+                            body.get("checks"),
                             CheckAnswersFormPojo[].class
                     )
             );

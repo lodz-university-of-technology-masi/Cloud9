@@ -39,9 +39,8 @@ public class AddUserToFormHandler implements RequestHandler<Map<String, Object>,
                     if(!form.getUsers().contains(user))
                         usersForm.add(user);
                 form.setUsers(usersForm);
-                new FormDBTable().save(form);
             }
-
+            new FormDBTable().save(form);
             return ApiRespnsesHandlerPojo.sendResponse(form, 200);
         }
         catch(Exception e){

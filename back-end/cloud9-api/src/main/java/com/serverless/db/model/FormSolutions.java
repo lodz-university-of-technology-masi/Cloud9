@@ -15,6 +15,7 @@ public class FormSolutions {
     private String formId;
     private List<SingleAnswer> answers;
     private List<CheckAnswer> check;
+    private Boolean fitInTime;
 
     public FormSolutions() {}
 
@@ -22,6 +23,13 @@ public class FormSolutions {
         this.userId = userId;
         this.formId = formId;
         this.answers = answers;
+    }
+    public FormSolutions(String userId, String formId, List<SingleAnswer> answers, Boolean fitInTime) {
+        this.userId = userId;
+        this.formId = formId;
+        this.answers = answers;
+        this.answers = answers;
+        this.fitInTime = fitInTime;
     }
 
     @DynamoDBHashKey(attributeName = "id")
@@ -67,5 +75,14 @@ public class FormSolutions {
     @DynamoDBAttribute(attributeName = "check")
     public void setCheck(List<CheckAnswer> check) {
         this.check = check;
+    }
+
+    @DynamoDBAttribute(attributeName = "fitInTime")
+    public Boolean getFitInTime() {
+        return fitInTime;
+    }
+
+    public void setFitInTime(Boolean fitInTime) {
+        this.fitInTime = fitInTime;
     }
 }

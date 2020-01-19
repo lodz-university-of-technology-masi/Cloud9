@@ -48,7 +48,7 @@ public class AddFormSolutionsHandler implements RequestHandler<Map<String, Objec
         LOG.info("Call AddSoleFormnHandler::handleRequest(" + input + ", " + context + ")");
         try{
             Map<String, String> pathParameters = (Map<String, String>) input.get("pathParameters");
-            JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
+
             String formId = pathParameters.get("id");
             String userId = pathParameters.get("user");
 
@@ -63,21 +63,30 @@ public class AddFormSolutionsHandler implements RequestHandler<Map<String, Objec
                 return ApiRespnsesHandlerPojo.sendResponse("unauthorized user", 401);
             }
 
+            JsonNode body = new ObjectMapper().readTree((String) input.get("body"));
+            Boolean fitInTime = body.get("fitInTime").asBoolean();
+            if(fitInTime == null){
+                LOG.warn("You must add fitInTime");
+                return ApiRespnsesHandlerPojo.sendResponse("You must add fitInTime", 500);
+            }
+
             List<SingleAnswerFormPojo> answers = Arrays.asList(
                     new ObjectMapper().convertValue(
                             body.get("answers"),
                             SingleAnswerFormPojo[].class
                     )
             );
+
             ResponseListErrorMessagePojo errors = this.validate(answers);
             if(errors.getErrors().size() > 0)
                 return ApiRespnsesHandlerPojo.sendResponse(errors, 500);
 
-            new FormSolutionsDBTable().save(new FormSolutions(userId, formId, this.generateSingleAnswerList(answers)));
+            FormSolutions formSolutions = new FormSolutions(userId, formId, this.generateSingleAnswerList(answers), fitInTime);
+            new FormSolutionsDBTable().save(formSolutions);
 
-            return ApiRespnsesHandlerPojo.sendResponse(answers, 200);
+            return ApiRespnsesHandlerPojo.sendResponse(formSolutions, 200);
         } catch (Exception e) {
-            LOG.error("AddSoleFormnHandler Exception ->" + e.toString());
+            LOG.error("AddFormSolutionsHandler Exception ->" + e.toString());
             return ApiRespnsesHandlerPojo.sendResponse(new ResponseErrorMessagePojo(e.toString()), 500);
         }
     }

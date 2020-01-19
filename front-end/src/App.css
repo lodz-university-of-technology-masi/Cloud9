@@ -1,0 +1,28 @@
+/* .dropdown {
+  color:#fff;
+} */
+
+.navbar{
+  /* background-color: #111; */
+  background-color: #fff;
+}
+.navbar .navbar-brand{
+    text-decoration: none;
+    color: #00E600;
+    font-size: 1.8rem;
+}
+
+.navbar .nav-link{
+  color: #00E600;
+  font-size: 1.5rem;
+}
+
+.navbar .navbar-brand:hover, .nav-link:hover{
+  color: #00E676;
+} 
+.navbar .navbar-toggler {
+  border-color: #00E600;
+}
+.navbar .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 230, 0, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
